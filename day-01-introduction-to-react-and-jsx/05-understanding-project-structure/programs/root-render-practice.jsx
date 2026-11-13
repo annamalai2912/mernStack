@@ -27,3 +27,4 @@ if (rootElement) {
     </React.StrictMode>
   );
 }
+

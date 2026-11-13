@@ -22,3 +22,4 @@ function navigateTo(page) {
 }
 
 // Student Practice: Try adding a new view (e.g. 'grades') and call navigateTo('grades')
+

@@ -34,3 +34,4 @@ export const studentData = {
     phone: "+91 98765 43210"
   }
 };
+

@@ -16,3 +16,4 @@ npm run dev
 # Step 5: Test Hot Module Replacement (HMR)
 # Open src/App.jsx, edit the text inside <h1>, and save.
 # Notice the instant update in the browser without losing state!
+
