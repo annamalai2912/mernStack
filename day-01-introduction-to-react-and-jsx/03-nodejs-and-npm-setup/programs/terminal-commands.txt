@@ -1,0 +1,21 @@
+# Practical: Terminal Commands Practiced & Verified
+# Fill in your output after running each command in your terminal
+
+1. Verify Node.js Version:
+Command: node -v
+Output: 
+
+2. Verify npm Version:
+Command: npm -v
+Output: 
+
+3. Initialize a Test Package:
+Command: npm init -y
+Output: 
+
+4. Install a Package:
+Command: npm install <package-name>
+Output: 
+
+5. Check Package Installation in package.json:
+Inspected fields: dependencies, devDependencies
