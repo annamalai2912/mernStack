@@ -1,6 +1,19 @@
 # Office temporary lock files
 ~$*
 
+# Tutor-specific materials (Keep locally for the instructor, do not publish to student repo)
+TUTOR_TEACHING_SCRIPT_DAY_1.md
+Tutor-Guide-Day-01-React-and-JSX.pdf
+Tutor_Session_Guide_React_and_JSX.docx
+React_and_JSX_Masterclass.pptx
+generate_deck.py
+generate_docx.py
+generate_pdf.py
+*.pptx
+*.docx
+*.pdf
+
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -32,4 +45,3 @@ dist-ssr/
 .env.development.local
 .env.test.local
 .env.production.local
-
