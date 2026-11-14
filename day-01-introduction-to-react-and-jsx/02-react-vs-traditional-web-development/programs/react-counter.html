@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Declarative Counter (Standalone CDN Demo)</title>
+  <!-- Load React and ReactDOM from CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <!-- Load Babel to transpile JSX live in the browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 30px; background: #f8fafc; }
+    .counter-card { border: 1px solid #cbd5e1; padding: 24px; border-radius: 10px; max-width: 320px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    button { padding: 8px 16px; margin: 4px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; }
+    .btn-inc { background: #2563eb; color: #ffffff; }
+    .btn-dec { background: #e2e8f0; color: #1e293b; }
+    .btn-reset { background: #fee2e2; color: #b91c1c; }
+    .count-display { font-size: 28px; font-weight: bold; margin: 12px 0; color: #1e293b; }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function ReactCounter() {
+      // Declarative state: React re-renders the UI automatically when count changes
+      const [count, setCount] = React.useState(0);
+
+      return (
+        <div className="counter-card">
+          <h2>React Counter</h2>
+          <p style={{ color: '#64748b', fontSize: '13px' }}>Declarative UI: No manual DOM queries</p>
+          <div className="count-display">{count}</div>
+          <div>
+            <button className="btn-inc" onClick={() => setCount(count + 1)}>+ Increment</button>
+            <button className="btn-dec" onClick={() => setCount(count - 1)}>- Decrement</button>
+            <button className="btn-reset" onClick={() => setCount(0)}>Reset</button>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<ReactCounter />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSX Syntax & Dynamic Expressions Live Demo</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; padding: 30px; }
+    .card { max-width: 480px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    h1 { color: #1e40af; font-size: 22px; margin-top: 0; }
+    p { margin: 8px 0; color: #334155; }
+    input { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function JsxSyntaxPractice() {
+      const studentName = "Amina";
+      const departmentName = "Computer Science & Engineering";
+      const semester = 6;
+      const attendance = 88;
+      const isEligible = attendance >= 75;
+
+      const badgeStyle = {
+        padding: '3px 8px',
+        borderRadius: '4px',
+        display: 'inline-block',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        backgroundColor: isEligible ? '#dcfce7' : '#fee2e2',
+        color: isEligible ? '#15803d' : '#b91c1c'
+      };
+
+      return (
+        <div className="card">
+          <h1>JSX Syntax & Expressions</h1>
+          <h2>Student: {studentName.toUpperCase()}</h2>
+          <p><strong>Department:</strong> {departmentName}</p>
+          <p><strong>Current Semester:</strong> Semester {semester}</p>
+          <p><strong>Graduation Year:</strong> {new Date().getFullYear() + 1}</p>
+          
+          <p>
+            <strong>Attendance:</strong> {attendance}% &nbsp;
+            <span style={badgeStyle}>
+              {isEligible ? "Eligible for Exams" : "Attendance Shortage"}
+            </span>
+          </p>
+
+          {isEligible && (
+            <div style={{ background: '#e0f2fe', color: '#0369a1', padding: '10px', borderRadius: '6px', fontSize: '13px', marginTop: '10px' }}>
+              🎉 Examination hall ticket generation is active!
+            </div>
+          )}
+
+          <div style={{ marginTop: '16px' }}>
+            <label style={{ fontSize: '13px', fontWeight: '500' }}>Student Feedback (Self-Closing Tag):</label>
+            <input type="text" placeholder="Type comments here..." />
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<JsxSyntaxPractice />);
+  </script>
+</body>
+</html>

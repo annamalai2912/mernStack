@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPA vs MPA Demonstration - Single Page Application</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; padding: 30px; }
+    .container { max-width: 720px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; border: 1px solid #e2e8f0; }
+    header { background: #1e40af; color: #ffffff; padding: 20px 24px; }
+    header h1 { font-size: 20px; font-weight: 600; }
+    header p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+    nav { display: flex; background: #f1f5f9; border-bottom: 1px solid #cbd5e1; padding: 8px 16px; gap: 8px; }
+    nav button { background: transparent; border: 1px solid transparent; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; color: #475569; transition: all 0.2s; }
+    nav button:hover { background: #e2e8f0; color: #0f172a; }
+    nav button.active { background: #ffffff; color: #1e40af; border-color: #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    #root-view { padding: 24px; min-height: 220px; }
+    .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-top: 12px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #dcfce7; color: #166534; }
+    .status-bar { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 12px 24px; font-size: 12px; color: #64748b; display: flex; justify-content: space-between; align-items: center; }
+    .highlight { color: #2563eb; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Campus Student Portal (SPA Simulation)</h1>
+      <p>Demonstrating how React & SPAs switch views without browser page reloads</p>
+    </header>
+
+    <!-- Navigation Bar: Clicking triggers JS client-side view switch -->
+    <nav>
+      <button id="btn-home" class="active" onclick="navigateTo('home')">Home</button>
+      <button id="btn-profile" onclick="navigateTo('profile')">Student Profile</button>
+      <button id="btn-courses" onclick="navigateTo('courses')">Enrolled Courses</button>
+      <button id="btn-grades" onclick="navigateTo('grades')">Semester Grades</button>
+    </nav>
+
+    <!-- Single Root Container where views are dynamically injected -->
+    <main id="root-view">
+      <!-- Injected by JavaScript -->
+    </main>
+
+    <footer class="status-bar">
+      <span>Browser Page Reloads: <span id="reload-count" class="highlight">1 (Initial load only)</span></span>
+      <span>Client View Switches: <span id="switch-count" class="highlight">0</span></span>
+    </footer>
+  </div>
+
+  <script>
+    // View dictionary: In React, these are modular Components
+    const views = {
+      home: `
+        <h2>Welcome to the Student Academic Portal</h2>
+        <p style="margin-top: 8px; color: #475569;">
+          In a Single Page Application (SPA), the browser downloads one HTML shell and JavaScript bundle.
+          When navigating, only the content inside this container changes dynamically.
+        </p>
+        <div class="card">
+          <strong>Key Benefit:</strong> Instant transitions, zero blank loading screens, and reduced server payload.
+        </div>
+      `,
+      profile: `
+        <h2>Student Profile</h2>
+        <div class="card">
+          <p><strong>Name:</strong> Alex Morgan</p>
+          <p><strong>Roll Number:</strong> CS-2024-042</p>
+          <p><strong>Department:</strong> Computer Science & Engineering</p>
+          <p><strong>Batch:</strong> 2022 - 2026</p>
+          <p style="margin-top: 8px;"><span class="badge">Status: Enrolled</span></p>
+        </div>
+      `,
+      courses: `
+        <h2>Enrolled Semester Courses</h2>
+        <div class="card">
+          <ul style="padding-left: 20px; line-height: 1.8;">
+            <li>CS301: Data Structures & Algorithms (4 Credits)</li>
+            <li>CS302: Database Management Systems (3 Credits)</li>
+            <li>CS303: React & Modern Web Engineering (3 Credits)</li>
+            <li>CS304: Computer Networks (3 Credits)</li>
+          </ul>
+        </div>
+      `,
+      grades: `
+        <h2>Semester Examination Results</h2>
+        <div class="card">
+          <p><strong>Current Semester:</strong> Semester 6</p>
+          <p><strong>Cumulative GPA (CGPA):</strong> 8.85 / 10.0</p>
+          <p><strong>Standing Arrears:</strong> 0</p>
+          <p style="margin-top: 8px;"><span class="badge">Result: All Cleared</span></p>
+        </div>
+      `
+    };
+
+    let switchCount = 0;
+
+    // SPA Navigation Function
+    function navigateTo(pageKey) {
+      const root = document.getElementById("root-view");
+      if (!root || !views[pageKey]) return;
+
+      // Update the DOM dynamically without page reload
+      root.innerHTML = views[pageKey];
+
+      // Update button active state
+      document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+      const activeBtn = document.getElementById(`btn-${pageKey}`);
+      if (activeBtn) activeBtn.classList.add("active");
+
+      // Update counter
+      switchCount++;
+      document.getElementById("switch-count").innerText = switchCount;
+
+      console.log(`[SPA Navigation] Switched to view: "${pageKey}" | Full page reloads: 0`);
+    }
+
+    // Initialize with Home view on first load
+    navigateTo('home');
+  </script>
+</body>
+</html>

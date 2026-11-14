@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placement Coding Challenges Live Demo</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; padding: 30px; margin: 0; }
+    .container { max-width: 540px; margin: 0 auto; }
+    .challenge-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06); }
+    h2 { color: #0f172a; margin-top: 0; }
+    h3 { margin-top: 0; color: #1e40af; font-size: 17px; }
+    button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; }
+    input { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const initialCandidates = [
+      { id: "C01", name: "Aarav", role: "Frontend Dev", status: "Selected" },
+      { id: "C02", name: "Fatima", role: "Full Stack Dev", status: "In Process" },
+      { id: "C03", name: "Karthik", role: "React Engineer", status: "Selected" },
+      { id: "C04", name: "Zainab", role: "UI/UX Developer", status: "In Process" }
+    ];
+
+    function CandidateList() {
+      return (
+        <div className="challenge-box">
+          <h3>Challenge 1: Candidate List Rendering</h3>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {initialCandidates.map(c => (
+              <li key={c.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
+                <span><strong>{c.name}</strong> ({c.role})</span>
+                <span style={{
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  background: c.status === 'Selected' ? '#dcfce7' : '#fef3c7',
+                  color: c.status === 'Selected' ? '#15803d' : '#b45309'
+                }}>
+                  {c.status}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    function BoundedCounter() {
+      const [count, setCount] = React.useState(0);
+
+      return (
+        <div className="challenge-box">
+          <h3>Challenge 2: Bounded State Counter (0 - 10)</h3>
+          <p style={{ fontSize: '20px', fontWeight: 'bold', margin: '8px 0' }}>Value: {count}</p>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => setCount(count - 1)}
+              disabled={count <= 0}
+              style={{ background: count <= 0 ? '#e2e8f0' : '#64748b', color: '#fff', cursor: count <= 0 ? 'not-allowed' : 'pointer' }}
+            >
+              - Decrement
+            </button>
+            <button
+              onClick={() => setCount(count + 1)}
+              disabled={count >= 10}
+              style={{ background: count >= 10 ? '#93c5fd' : '#2563eb', color: '#fff', cursor: count >= 10 ? 'not-allowed' : 'pointer' }}
+            >
+              + Increment
+            </button>
+            <button
+              onClick={() => setCount(0)}
+              style={{ background: '#fee2e2', color: '#b91c1c' }}
+            >
+              Reset
+            </button>
+          </div>
+          {count === 10 && <p style={{ color: '#dc2626', fontSize: '13px', margin: '8px 0 0 0' }}>⚠️ Maximum ceiling (10) reached.</p>}
+          {count === 0 && <p style={{ color: '#64748b', fontSize: '13px', margin: '8px 0 0 0' }}>ℹ️ Minimum floor (0) reached.</p>}
+        </div>
+      );
+    }
+
+    function LiveSkillFilter() {
+      const skills = ["React", "JavaScript", "TypeScript", "Node.js", "Express", "MongoDB", "Tailwind CSS", "Git"];
+      const [query, setQuery] = React.useState("");
+
+      const filtered = skills.filter(s => s.toLowerCase().includes(query.toLowerCase()));
+
+      return (
+        <div className="challenge-box">
+          <h3>Challenge 3: Live Input Search Filter</h3>
+          <input
+            type="text"
+            placeholder="Type to search skills (e.g. 'react')..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px' }}>
+            {filtered.map(s => (
+              <span key={s} style={{ background: '#e0f2fe', color: '#0369a1', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '500' }}>
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <div className="container">
+          <h2>Placement Coding Challenges</h2>
+          <CandidateList />
+          <BoundedCounter />
+          <LiveSkillFilter />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

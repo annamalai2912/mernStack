@@ -4,13 +4,13 @@
 
 export const studentData = {
   profile: {
-    name: "Mohamed Tariq",
-    rollNo: "911521104055",
+    name: "Alex Morgan",
+    rollNo: "CS-2024-042",
     department: "Computer Science & Engineering",
-    institution: "Mohammed Sathak Engineering College",
+    institution: "Institute of Technology & Engineering",
     batch: "2022 - 2026",
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=250&q=80",
-    bio: "Passionate about Frontend development, React ecosystem, and responsive web design."
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80",
+    bio: "Passionate about Frontend development, React ecosystem, and building responsive web applications."
   },
   academics: {
     cgpa: 8.85,
@@ -28,10 +28,9 @@ export const studentData = {
     "Tailwind CSS"
   ],
   contact: {
-    email: "tariq.cse@sathak.edu.in",
-    github: "https://github.com/mohamed-tariq",
-    linkedin: "https://linkedin.com/in/mohamed-tariq",
+    email: "alex.morgan@campus.edu",
+    github: "https://github.com/alex-morgan",
+    linkedin: "https://linkedin.com/in/alex-morgan",
     phone: "+91 98765 43210"
   }
 };
-

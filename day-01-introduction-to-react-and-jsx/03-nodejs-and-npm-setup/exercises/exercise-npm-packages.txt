@@ -1,21 +1,21 @@
-# Exercise: npm Package Management Challenge
+# Exercise: Node.js & npm Package Management
 
 Tasks to complete in your terminal:
-1. Initialize a test project in a temporary folder:
+1. Test Node.js execution:
+   Command: node ../programs/node-demo.js
+
+2. Initialize a test project in a temporary folder:
    Command: npm init -y
 
-2. Install 'canvas-confetti' as a regular production dependency:
+3. Install 'canvas-confetti' as a regular production dependency:
    Command: npm install canvas-confetti
 
-3. Install 'vite' as a development dependency:
+4. Install 'vite' as a development dependency:
    Command: npm install -D vite
 
-4. Open 'package.json' and verify:
+5. Open 'package.json' and verify:
    - Is 'canvas-confetti' listed under "dependencies"?
    - Is 'vite' listed under "devDependencies"?
    - What version numbers are recorded?
 
-5. Inspect 'package-lock.json' and count how many sub-packages were resolved.
-
-6. Clean up: Delete node_modules and run `npm install`. Notice how fast npm restores all dependencies from package-lock.json!
-
+6. Clean up: Delete node_modules and run `npm install`. Notice how npm restores all dependencies!
