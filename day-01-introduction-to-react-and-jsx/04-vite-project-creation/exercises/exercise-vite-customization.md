@@ -16,3 +16,4 @@
    ```
 3. Restart your dev server with `npm run dev`.
 4. Verify that the app now opens on port 3000 automatically with your new custom title!
+

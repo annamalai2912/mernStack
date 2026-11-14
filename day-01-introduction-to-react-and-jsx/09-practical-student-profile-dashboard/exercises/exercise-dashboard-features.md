@@ -19,3 +19,4 @@ After building the base dashboard inside `../programs/student-dashboard/`:
    - Render functional mailto and tel links:
      - `<a href={"mailto:" + studentData.contact.email}>Send Email</a>`
      - `<a href={"tel:" + studentData.contact.phone}>Call</a>`
+

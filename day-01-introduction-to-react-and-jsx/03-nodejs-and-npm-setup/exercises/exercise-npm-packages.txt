@@ -18,3 +18,4 @@ Tasks to complete in your terminal:
 5. Inspect 'package-lock.json' and count how many sub-packages were resolved.
 
 6. Clean up: Delete node_modules and run `npm install`. Notice how fast npm restores all dependencies from package-lock.json!
+

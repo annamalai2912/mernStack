@@ -291,3 +291,4 @@ Before beginning the session, ensure:
 | **Student Profile Dashboard** | 35 | Running Vite app with modular components, `.map()`, and clean layout. |
 | **Placement Readiness** | 15 | Clear verbal answers to core interview questions during drill. |
 | **Total** | **100** | **Passing Criteria: 70%+** |
+
