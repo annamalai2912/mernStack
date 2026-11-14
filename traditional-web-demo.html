@@ -1,142 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Traditional Web: HTML + CSS + Vanilla JavaScript</title>
-  
-  <!-- CSS: How it looks (Clothes & Paint) -->
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f1f5f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .container {
-      background-color: #ffffff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      width: 380px;
-    }
-
-    h1 {
-      font-size: 20px;
-      color: #0f172a;
-      margin-top: 0;
-    }
-
-    .counter-display {
-      font-size: 32px;
-      font-weight: bold;
-      color: #0284c7;
-      margin: 15px 0;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 10px;
-    }
-
-    button {
-      flex: 1;
-      padding: 10px 14px;
-      font-size: 14px;
-      font-weight: 600;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .btn-primary {
-      background-color: #0284c7;
-      color: white;
-    }
-    .btn-primary:hover {
-      background-color: #0369a1;
-    }
-
-    .btn-secondary {
-      background-color: #e2e8f0;
-      color: #334155;
-    }
-    .btn-secondary:hover {
-      background-color: #cbd5e1;
-    }
-
-    ul {
-      list-style-type: none;
-      padding: 0;
-      margin-top: 20px;
-    }
-
-    li {
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      padding: 8px 12px;
-      margin-bottom: 6px;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #334155;
-    }
-  </style>
+  <title>Simple Vanilla JS Counter</title>
 </head>
-<body>
+<body style="font-family: sans-serif; padding: 20px;">
 
-  <!-- HTML: The Bones (Skeleton) -->
-  <div class="container">
-    <h1>Student Attendance Counter</h1>
-    <div id="counterValue" class="counter-display">0</div>
-    
-    <div class="btn-group">
-      <button id="addStudentBtn" class="btn-primary">+ Add Student</button>
-      <button id="resetBtn" class="btn-secondary">Reset</button>
-    </div>
+  <!-- HTML: The elements on screen -->
+  <h2>Vanilla JS Counter</h2>
+  <h1 id="countText">0</h1>
+  <button id="btn">+ Click Me</button>
 
-    <h3>Present Students List:</h3>
-    <ul id="studentsList">
-      <!-- JavaScript will manually inject items here -->
-    </ul>
-  </div>
-
-  <!-- JAVASCRIPT: The Brain (Vanilla JS - Manual DOM Manipulation) -->
+  <!-- JAVASCRIPT: Manually finding and updating the element -->
   <script>
-    // 1. Keep track of memory (state)
     let count = 0;
-    const studentNames = ["Aarav", "Fatima", "Karthik", "Zainab", "Divya", "Imran"];
+    const countText = document.getElementById("countText");
+    const btn = document.getElementById("btn");
 
-    // 2. Find the HTML elements manually using document.getElementById
-    const counterDisplay = document.getElementById("counterValue");
-    const addBtn = document.getElementById("addStudentBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const listElement = document.getElementById("studentsList");
-
-    // 3. Listen for clicks and imperatively tell browser step-by-step what to do
-    addBtn.addEventListener("click", function() {
-      if (count < studentNames.length) {
-        count++;
-        // Manually update the text on screen
-        counterDisplay.innerText = count;
-
-        // Manually create a new HTML <li> element and append it
-        const newLi = document.createElement("li");
-        newLi.innerText = `Student #${count}: ${studentNames[count - 1]}`;
-        listElement.appendChild(newLi);
-      } else {
-        alert("All enrolled students are already marked present!");
-      }
-    });
-
-    resetBtn.addEventListener("click", function() {
-      count = 0;
-      counterDisplay.innerText = count;
-      listElement.innerHTML = ""; // Wipe out all HTML children
+    btn.addEventListener("click", function() {
+      count = count + 1;
+      countText.innerText = count; // Manual DOM update
     });
   </script>
 

@@ -1,140 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Complete Standalone React Application</title>
-  
-  <!-- 1. Load React and ReactDOM from CDN -->
+  <title>Simple React Demo</title>
+  <!-- Load React & Babel from CDN -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  
-  <!-- 2. Load Babel (Transpiler that converts JSX to pure JS in real time) -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f8fafc;
-      padding: 40px;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-    }
-    .dashboard-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 24px;
-      width: 420px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-right: 6px;
-      margin-bottom: 6px;
-    }
-    .badge-blue { background: #e0f2fe; color: #0284c7; }
-    .badge-green { background: #dcfce7; color: #15803d; }
-    .badge-amber { background: #fef3c7; color: #b45309; }
-    button {
-      padding: 8px 14px;
-      background: #0284c7;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-right: 8px;
-    }
-  </style>
 </head>
-<body>
+<body style="font-family: sans-serif; padding: 20px;">
 
-  <!-- The single root container of our Single Page Application -->
+  <!-- The single root container -->
   <div id="root"></div>
 
-  <!-- Write React with JSX using type="text/babel" -->
+  <!-- React Code -->
   <script type="text/babel">
     const { useState } = React;
 
-    // 1. CHILD COMPONENT: Receives 'skill' as a PROP (Gift box)
-    function SkillPill({ skill }) {
-      return <span className="badge badge-blue">{skill}</span>;
+    // 1. Component with PROPS (Receives data from parent)
+    function Greeting({ name }) {
+      return <h2>Hello, {name}!</h2>;
     }
 
-    // 2. CHILD COMPONENT: Header
-    function Header({ studentName, department }) {
-      return (
-        <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '16px' }}>
-          <h2 style={{ margin: '0 0 4px 0', color: '#0f172a' }}>{studentName}</h2>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>{department}</p>
-        </div>
-      );
-    }
+    // 2. Main App with STATE (Memory) and a LIST
+    function App() {
+      // Memory (State)
+      const [count, setCount] = useState(0);
 
-    // 3. MAIN ROOT COMPONENT: Contains State (Memory) & Child Components
-    function StudentProfileApp() {
-      // Memory: likes count
-      const [likes, setLikes] = useState(0);
-
-      // Memory: show or hide secret bio
-      const [showBio, setShowBio] = useState(false);
-
-      // Data array to render dynamically with .map() and key
-      const skills = ["React.js", "JavaScript (ES6)", "HTML & CSS", "Git & GitHub"];
+      // List of skills
+      const skills = ["HTML", "CSS", "JavaScript", "React"];
 
       return (
-        <div className="dashboard-card">
-          {/* Component Composition: Parent rendering child with props */}
-          <Header studentName="Zainab Akhtar" department="Computer Science & Engineering" />
+        <div>
+          {/* Using the component with a prop */}
+          <Greeting name="Student" />
 
-          {/* Conditional Rendering using Ternary */}
-          <p>
-            Status:{' '}
-            <span className="badge badge-green">Enrolled & Active</span>
-          </p>
+          {/* Button that updates state */}
+          <button onClick={() => setCount(count + 1)}>
+            Clicks: {count}
+          </button>
 
-          {/* List Rendering using .map() with unique key */}
-          <h4>Verified Skills:</h4>
-          <div>
-            {skills.map((item) => (
-              <SkillPill key={item} skill={item} />
+          {/* Rendering a list using .map() and key */}
+          <h3>My Skills:</h3>
+          <ul>
+            {skills.map((skill) => (
+              <li key={skill}>{skill}</li>
             ))}
-          </div>
-
-          <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #e2e8f0' }}>
-            {/* Interactive State Remote Controls */}
-            <button onClick={() => setLikes(likes + 1)}>
-              👍 Endorse Student ({likes})
-            </button>
-
-            <button
-              onClick={() => setShowBio(!showBio)}
-              style={{ background: '#e2e8f0', color: '#334155' }}
-            >
-              {showBio ? "Hide Bio" : "Read Bio"}
-            </button>
-
-            {/* Logical AND conditional rendering */}
-            {showBio && (
-              <p style={{ marginTop: '12px', fontSize: '13px', color: '#475569', background: '#f8fafc', padding: '10px', borderRadius: '6px' }}>
-                "Passionate aspiring frontend software engineer preparing for product-based placement interviews. Loves building clean, modular UI with React."
-              </p>
-            )}
-          </div>
+          </ul>
         </div>
       );
     }
 
-    // 4. MOUNTING: Injecting our complete React App into the #root div
-    const rootElement = document.getElementById('root');
-    const root = ReactDOM.createRoot(rootElement);
-    root.render(<StudentProfileApp />);
+    // Mount React into the #root div
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
   </script>
 
 </body>
