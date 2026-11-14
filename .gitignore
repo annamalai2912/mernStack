@@ -1,4 +1,6 @@
-# Logs
+# Office temporary lock files
+~$*
+
 logs
 *.log
 npm-debug.log*
