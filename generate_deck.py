@@ -7,32 +7,38 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
 # ==============================================================================
-# COLOR PALETTE (Modern Slate & React Cyan Theme)
+# LIGHT COLOR PALETTE (Clean, Modern Light Slate & Vibrant Accents)
 # ==============================================================================
-BG_COLOR       = RGBColor(15, 23, 42)     # Slate 900 (#0F172A)
-CARD_BG        = RGBColor(30, 41, 59)     # Slate 800 (#1E293B)
-CARD_BORDER    = RGBColor(51, 65, 85)     # Slate 700 (#334155)
-CARD_ALT_BG    = RGBColor(24, 33, 47)     # Darker card (#18212F)
+BG_COLOR       = RGBColor(248, 250, 252)  # Slate 50 (#F8FAFC) - Crisp light backdrop
+CARD_BG        = RGBColor(255, 255, 255)  # Pure White (#FFFFFF)
+CARD_BORDER    = RGBColor(226, 232, 240)  # Slate 200 (#E2E8F0) - Subtle clean border
+CARD_ALT_BG    = RGBColor(241, 245, 249)  # Slate 100 (#F1F5F9)
 
-TEXT_TITLE     = RGBColor(255, 255, 255)  # Pure White
-TEXT_BODY      = RGBColor(226, 232, 240)  # Slate 200
-TEXT_MUTED     = RGBColor(148, 163, 184)  # Slate 400
+TEXT_TITLE     = RGBColor(15, 23, 42)     # Slate 900 (#0F172A) - Deep rich text
+TEXT_SUBTITLE  = RGBColor(51, 65, 85)     # Slate 700 (#334155)
+TEXT_BODY      = RGBColor(71, 85, 105)    # Slate 600 (#475569) - Readable body
+TEXT_MUTED     = RGBColor(100, 116, 139)  # Slate 500 (#64748B)
 
-ACCENT_CYAN    = RGBColor(56, 189, 248)   # React Cyan / Sky 400 (#38BDF8)
-ACCENT_INDIGO  = RGBColor(129, 140, 248)  # Indigo 400 (#818CF8)
-ACCENT_GREEN   = RGBColor(52, 211, 153)   # Emerald 400 (#34D399)
-ACCENT_AMBER   = RGBColor(251, 191, 36)   # Amber 400 (#FBBF24)
-ACCENT_ROSE    = RGBColor(251, 113, 133)  # Rose 400 (#FB7185)
+# High-contrast light theme accents (AA/AAA compliant on white)
+ACCENT_BLUE    = RGBColor(2, 132, 199)    # Sky 600 (#0284C7) - React Brand Blue
+ACCENT_INDIGO  = RGBColor(79, 70, 229)    # Indigo 600 (#4F46E5)
+ACCENT_GREEN   = RGBColor(5, 150, 105)    # Emerald 600 (#059669)
+ACCENT_AMBER   = RGBColor(217, 119, 6)    # Amber 600 (#D97706)
+ACCENT_ROSE    = RGBColor(225, 29, 72)    # Rose 600 (#E11D48)
 
-CODE_BG        = RGBColor(10, 15, 30)     # Dark terminal (#0A0F1E)
-CODE_BORDER    = RGBColor(40, 50, 70)
+# Code block styling (Clean light editor look)
+CODE_BG        = RGBColor(241, 245, 249)  # Slate 100 (#F1F5F9)
+CODE_BORDER    = RGBColor(203, 213, 225)  # Slate 300 (#CBD5E1)
+CODE_TEXT      = RGBColor(15, 23, 42)     # Slate 900
+CODE_KEYWORD   = RGBColor(79, 70, 229)    # Indigo 600
+CODE_COMMENT   = RGBColor(5, 150, 105)    # Emerald 600
 
 FONT_HEADING = 'Segoe UI'
 FONT_BODY    = 'Segoe UI'
 FONT_CODE    = 'Consolas'
 
 # ==============================================================================
-# HELPER FUNCTIONS FOR CLEAN PPTX GENERATION
+# HELPER FUNCTIONS
 # ==============================================================================
 
 def create_presentation():
@@ -42,7 +48,6 @@ def create_presentation():
     return prs
 
 def set_slide_background(slide):
-    # Add full slide background shape
     bg = slide.shapes.add_shape(
         MSO_SHAPE.RECTANGLE, 0, 0, Inches(13.333), Inches(7.5)
     )
@@ -54,13 +59,13 @@ def set_slide_background(slide):
 def add_header(slide, category, title, subtitle=None):
     set_slide_background(slide)
     
-    # Category Tag Pill
+    # Category Tag Pill (Light blue badge)
     cat_box = slide.shapes.add_shape(
         MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.5), Inches(3.2), Inches(0.35)
     )
     cat_box.fill.solid()
-    cat_box.fill.fore_color.rgb = RGBColor(30, 41, 59)
-    cat_box.line.color.rgb = ACCENT_CYAN
+    cat_box.fill.fore_color.rgb = RGBColor(224, 242, 254)  # Light Sky Blue tint
+    cat_box.line.color.rgb = RGBColor(186, 230, 253)
     cat_box.line.width = Pt(1)
     
     tf_c = cat_box.text_frame
@@ -72,7 +77,7 @@ def add_header(slide, category, title, subtitle=None):
     p_c.font.name = FONT_HEADING
     p_c.font.size = Pt(9.5)
     p_c.font.bold = True
-    p_c.font.color.rgb = ACCENT_CYAN
+    p_c.font.color.rgb = ACCENT_BLUE
     p_c.alignment = PP_ALIGN.CENTER
 
     # Main Title & Subtitle Box
@@ -96,17 +101,16 @@ def add_header(slide, category, title, subtitle=None):
         p_sub.font.size = Pt(12)
         p_sub.font.color.rgb = TEXT_MUTED
 
-def add_card(slide, left, top, width, height, title=None, border_color=CARD_BORDER, bg_color=CARD_BG):
+def add_card(slide, left, top, width, height, title=None, border_color=CARD_BORDER, bg_color=CARD_BG, title_color=ACCENT_BLUE):
     card = slide.shapes.add_shape(
         MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height)
     )
     card.fill.solid()
     card.fill.fore_color.rgb = bg_color
     card.line.color.rgb = border_color
-    card.line.width = Pt(1)
+    card.line.width = Pt(1.2)
     
     if title:
-        # Title banner inside card
         tb = slide.shapes.add_textbox(Inches(left + 0.25), Inches(top + 0.2), Inches(width - 0.5), Inches(0.45))
         tf = tb.text_frame
         tf.word_wrap = True
@@ -116,7 +120,7 @@ def add_card(slide, left, top, width, height, title=None, border_color=CARD_BORD
         p.font.name = FONT_HEADING
         p.font.size = Pt(14)
         p.font.bold = True
-        p.font.color.rgb = ACCENT_CYAN
+        p.font.color.rgb = title_color
     return card
 
 def add_bullet(tf, bold_prefix, text, size=11, font_color=TEXT_BODY, space_after=6):
@@ -157,11 +161,11 @@ def add_code_box(slide, left, top, width, height, code_text):
         p.font.name = FONT_CODE
         p.font.size = Pt(9.5)
         if line.strip().startswith('//') or line.strip().startswith('#'):
-            p.font.color.rgb = ACCENT_GREEN
-        elif 'import' in line or 'export' in line or 'return' in line or 'const' in line:
-            p.font.color.rgb = ACCENT_INDIGO
+            p.font.color.rgb = CODE_COMMENT
+        elif any(k in line for k in ['import', 'export', 'return', 'const', 'function', 'from']):
+            p.font.color.rgb = CODE_KEYWORD
         else:
-            p.font.color.rgb = TEXT_BODY
+            p.font.color.rgb = CODE_TEXT
         p.space_after = Pt(1)
 
 # ==============================================================================
@@ -173,13 +177,15 @@ def build_deck():
     blank_layout = prs.slide_layouts[6]
 
     # --------------------------------------------------------------------------
-    # SLIDE 1: TITLE SLIDE
+    # SLIDE 1: TITLE SLIDE (Clean Light Theme)
     # --------------------------------------------------------------------------
     slide1 = prs.slides.add_slide(blank_layout)
     set_slide_background(slide1)
     
-    # Hero Title Box
-    tb_title = slide1.shapes.add_textbox(Inches(1.0), Inches(1.8), Inches(11.333), Inches(3.2))
+    # White Hero Container Card
+    add_card(slide1, 0.8, 0.8, 11.733, 5.9, None, RGBColor(226, 232, 240), CARD_BG)
+    
+    tb_title = slide1.shapes.add_textbox(Inches(1.2), Inches(1.4), Inches(11.0), Inches(3.2))
     tf1 = tb_title.text_frame
     tf1.word_wrap = True
     
@@ -188,7 +194,7 @@ def build_deck():
     p_tag.font.name = FONT_HEADING
     p_tag.font.size = Pt(13)
     p_tag.font.bold = True
-    p_tag.font.color.rgb = ACCENT_CYAN
+    p_tag.font.color.rgb = ACCENT_BLUE
     p_tag.space_after = Pt(12)
     
     p_h1 = tf1.add_paragraph()
@@ -205,25 +211,25 @@ def build_deck():
     p_sub.font.size = Pt(16)
     p_sub.font.color.rgb = TEXT_MUTED
     
-    # Feature Badge Pill row
+    # Feature Badges
     badges = [
-        ("React.js", ACCENT_CYAN),
-        ("Single Page Applications", ACCENT_INDIGO),
-        ("Vite & ESBuild", ACCENT_GREEN),
-        ("JSX Syntax", ACCENT_AMBER),
-        ("Functional Components", ACCENT_CYAN),
-        ("Placement Interview Ready", ACCENT_ROSE)
+        ("React.js", ACCENT_BLUE, RGBColor(224, 242, 254)),
+        ("Single Page Applications", ACCENT_INDIGO, RGBColor(238, 242, 255)),
+        ("Vite & ESBuild", ACCENT_GREEN, RGBColor(220, 252, 231)),
+        ("JSX Syntax", ACCENT_AMBER, RGBColor(254, 243, 199)),
+        ("Functional Components", ACCENT_BLUE, RGBColor(224, 242, 254)),
+        ("Placement Interview Ready", ACCENT_ROSE, RGBColor(255, 228, 230))
     ]
     
-    start_left = 1.0
-    for text, color in badges:
-        w = 1.8
+    start_left = 1.2
+    for text, border_col, bg_col in badges:
+        w = 1.76
         badge = slide1.shapes.add_shape(
-            MSO_SHAPE.ROUNDED_RECTANGLE, Inches(start_left), Inches(5.4), Inches(w), Inches(0.55)
+            MSO_SHAPE.ROUNDED_RECTANGLE, Inches(start_left), Inches(5.1), Inches(w), Inches(0.55)
         )
         badge.fill.solid()
-        badge.fill.fore_color.rgb = CARD_BG
-        badge.line.color.rgb = color
+        badge.fill.fore_color.rgb = bg_col
+        badge.line.color.rgb = border_col
         badge.line.width = Pt(1)
         
         tf_b = badge.text_frame
@@ -233,9 +239,9 @@ def build_deck():
         p_b.font.name = FONT_HEADING
         p_b.font.size = Pt(9.5)
         p_b.font.bold = True
-        p_b.font.color.rgb = color
+        p_b.font.color.rgb = border_col
         p_b.alignment = PP_ALIGN.CENTER
-        start_left += 1.95
+        start_left += 1.84
 
     # --------------------------------------------------------------------------
     # SLIDE 2: CURRICULUM ROADMAP
@@ -273,7 +279,7 @@ def build_deck():
         p_num.font.name = FONT_HEADING
         p_num.font.size = Pt(9)
         p_num.font.bold = True
-        p_num.font.color.rgb = ACCENT_CYAN
+        p_num.font.color.rgb = ACCENT_BLUE
         p_num.space_after = Pt(3)
         
         p_t = tf_m.add_paragraph()
@@ -296,8 +302,8 @@ def build_deck():
     slide3 = prs.slides.add_slide(blank_layout)
     add_header(slide3, "Module 01", "Introduction to React & Single Page Applications", "How modern web architectures eliminate page reloads and improve user experience")
     
-    # Left Card: What is React?
-    add_card(slide3, 0.8, 2.2, 5.7, 4.7, "What is React?", ACCENT_CYAN)
+    # Left Card
+    add_card(slide3, 0.8, 2.2, 5.7, 4.7, "What is React?", RGBColor(186, 230, 253), CARD_BG, ACCENT_BLUE)
     tb_c1 = slide3.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_c1 = tb_c1.text_frame
     tf_c1.word_wrap = True
@@ -306,8 +312,8 @@ def build_deck():
     add_bullet(tf_c1, "Created by Meta (Facebook):", "Authored by Jordan Walke in 2011 to solve state synchronization across complex, real-time UI feeds.")
     add_bullet(tf_c1, "Unidirectional Data Flow:", "Data flows cleanly downwards from parent components to child components via props.")
 
-    # Right Card: Single Page Application (SPA) vs Multi-Page (MPA)
-    add_card(slide3, 6.8, 2.2, 5.7, 4.7, "SPA vs Traditional MPA Architecture", ACCENT_INDIGO)
+    # Right Card
+    add_card(slide3, 6.8, 2.2, 5.7, 4.7, "SPA vs Traditional MPA Architecture", RGBColor(199, 210, 254), CARD_BG, ACCENT_INDIGO)
     tb_c2 = slide3.shapes.add_textbox(Inches(7.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_c2 = tb_c2.text_frame
     tf_c2.word_wrap = True
@@ -323,7 +329,7 @@ def build_deck():
     add_header(slide4, "Module 02", "React vs Traditional Web Development", "Contrasting imperative DOM manipulation with declarative UI paradigms")
     
     # Left: Traditional Imperative
-    add_card(slide4, 0.8, 2.2, 5.7, 4.7, "Traditional: Imperative Vanilla JS", ACCENT_AMBER)
+    add_card(slide4, 0.8, 2.2, 5.7, 4.7, "Traditional: Imperative Vanilla JS", RGBColor(253, 230, 138), CARD_BG, ACCENT_AMBER)
     tb_t = slide4.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(1.8))
     tf_t = tb_t.text_frame
     tf_t.word_wrap = True
@@ -343,7 +349,7 @@ def build_deck():
     add_code_box(slide4, 1.05, 4.6, 5.2, 2.0, code_imp)
 
     # Right: Declarative React
-    add_card(slide4, 6.8, 2.2, 5.7, 4.7, "Modern: Declarative React Paradigm", ACCENT_GREEN)
+    add_card(slide4, 6.8, 2.2, 5.7, 4.7, "Modern: Declarative React Paradigm", RGBColor(167, 243, 208), CARD_BG, ACCENT_GREEN)
     tb_r = slide4.shapes.add_textbox(Inches(7.05), Inches(2.8), Inches(5.2), Inches(1.8))
     tf_r = tb_r.text_frame
     tf_r.word_wrap = True
@@ -370,15 +376,15 @@ def build_deck():
     add_header(slide5, "Module 02 (Deep Dive)", "The Virtual DOM & Reconciliation Engine", "Why manipulating the Real DOM is slow and how React optimizes rendering performance")
     
     steps = [
-        ("1. In-Memory Representation", "The Virtual DOM (VDOM) is a lightweight JavaScript tree representation of the Real DOM kept in memory by ReactDOM.", ACCENT_CYAN),
-        ("2. State Change & Re-render", "When component state changes, React creates a brand-new Virtual DOM tree representing the updated UI state.", ACCENT_INDIGO),
-        ("3. The Diffing Algorithm", "React compares the new VDOM with the previous VDOM snapshot using an optimized O(n) heuristic diffing algorithm.", ACCENT_AMBER),
-        ("4. Reconciliation & Batching", "React calculates the minimal set of changes and batches updates to ONLY the affected nodes in the Real DOM.", ACCENT_GREEN)
+        ("1. In-Memory Representation", "The Virtual DOM (VDOM) is a lightweight JavaScript tree representation of the Real DOM kept in memory by ReactDOM.", ACCENT_BLUE, RGBColor(186, 230, 253)),
+        ("2. State Change & Re-render", "When component state changes, React creates a brand-new Virtual DOM tree representing the updated UI state.", ACCENT_INDIGO, RGBColor(199, 210, 254)),
+        ("3. The Diffing Algorithm", "React compares the new VDOM with the previous VDOM snapshot using an optimized O(n) heuristic diffing algorithm.", ACCENT_AMBER, RGBColor(253, 230, 138)),
+        ("4. Reconciliation & Batching", "React calculates the minimal set of changes and batches updates to ONLY the affected nodes in the Real DOM.", ACCENT_GREEN, RGBColor(167, 243, 208))
     ]
     
-    for idx, (title, desc, color) in enumerate(steps):
+    for idx, (title, desc, color, border_c) in enumerate(steps):
         top = 2.2 + idx * 1.15
-        card = add_card(slide5, 0.8, top, 11.733, 1.0, None, color, CARD_BG)
+        card = add_card(slide5, 0.8, top, 11.733, 1.0, None, border_c, CARD_BG)
         tb_s = slide5.shapes.add_textbox(Inches(1.05), Inches(top + 0.15), Inches(11.2), Inches(0.7))
         tf_s = tb_s.text_frame
         tf_s.word_wrap = True
@@ -404,7 +410,7 @@ def build_deck():
     slide6 = prs.slides.add_slide(blank_layout)
     add_header(slide6, "Module 03", "Node.js & npm Setup", "Understanding the modern JavaScript runtime, package ecosystem, and dependency management")
     
-    add_card(slide6, 0.8, 2.2, 5.7, 4.7, "Why Node.js for Frontend Development?", ACCENT_CYAN)
+    add_card(slide6, 0.8, 2.2, 5.7, 4.7, "Why Node.js for Frontend Development?", RGBColor(186, 230, 253), CARD_BG, ACCENT_BLUE)
     tb_n1 = slide6.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_n1 = tb_n1.text_frame
     tf_n1.word_wrap = True
@@ -413,7 +419,7 @@ def build_deck():
     add_bullet(tf_n1, "Dependencies vs devDependencies:", "Runtime packages (like Lucide icons, date formatters) vs build-time tooling (Vite, ESLint).")
     add_bullet(tf_n1, "Version Verification:", "Ensure Node.js LTS (v18+ or v20+) and npm v9+ are properly configured in system PATH.")
 
-    add_card(slide6, 6.8, 2.2, 5.7, 4.7, "Critical Configuration & Command Reference", ACCENT_AMBER)
+    add_card(slide6, 6.8, 2.2, 5.7, 4.7, "Critical Configuration & Command Reference", RGBColor(253, 230, 138), CARD_BG, ACCENT_AMBER)
     code_npm = (
         "# 1. Verify Environment Versions\n"
         "node -v\n"
@@ -435,7 +441,7 @@ def build_deck():
     slide7 = prs.slides.add_slide(blank_layout)
     add_header(slide7, "Module 04", "Vite: Next-Generation Frontend Tooling", "Why modern web developers replaced Create React App with Vite for blazing-fast builds")
     
-    add_card(slide7, 0.8, 2.2, 5.7, 4.7, "Why Vite Over Create React App (CRA)?", ACCENT_GREEN)
+    add_card(slide7, 0.8, 2.2, 5.7, 4.7, "Why Vite Over Create React App (CRA)?", RGBColor(167, 243, 208), CARD_BG, ACCENT_GREEN)
     tb_v1 = slide7.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_v1 = tb_v1.text_frame
     tf_v1.word_wrap = True
@@ -444,7 +450,7 @@ def build_deck():
     add_bullet(tf_v1, "Powered by esbuild (Written in Go):", "Pre-bundles dependencies 10x-100x faster than JavaScript-based bundlers like Webpack.")
     add_bullet(tf_v1, "Instant Hot Module Replacement (HMR):", "Updates modified UI components in real time without refreshing the page or losing state.")
 
-    add_card(slide7, 6.8, 2.2, 5.7, 4.7, "Step-by-Step Project Scaffolding", ACCENT_CYAN)
+    add_card(slide7, 6.8, 2.2, 5.7, 4.7, "Step-by-Step Project Scaffolding", RGBColor(186, 230, 253), CARD_BG, ACCENT_BLUE)
     code_vite = (
         "# Step 1: Scaffold new Vite React project\n"
         "npm create vite@latest my-react-app -- --template react\n\n"
@@ -464,8 +470,7 @@ def build_deck():
     slide8 = prs.slides.add_slide(blank_layout)
     add_header(slide8, "Module 05", "Understanding Project Structure", "Tracing execution flow from index.html to main.jsx and the root component App.jsx")
     
-    # Left: Directory breakdown
-    add_card(slide8, 0.8, 2.2, 5.7, 4.7, "Project File Anatomy", ACCENT_INDIGO)
+    add_card(slide8, 0.8, 2.2, 5.7, 4.7, "Project File Anatomy", RGBColor(199, 210, 254), CARD_BG, ACCENT_INDIGO)
     tb_p1 = slide8.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_p1 = tb_p1.text_frame
     tf_p1.word_wrap = True
@@ -475,8 +480,7 @@ def build_deck():
     add_bullet(tf_p1, "<React.StrictMode>:", "Development helper that intentionally mounts components twice to highlight accidental side-effects.")
     add_bullet(tf_p1, "public/ vs src/assets/:", "Public assets are served unmodified; assets in src/ are bundled, hashed, and optimized by Vite.")
 
-    # Right: Code mounting
-    add_card(slide8, 6.8, 2.2, 5.7, 4.7, "How React Mounts into the Browser", ACCENT_CYAN)
+    add_card(slide8, 6.8, 2.2, 5.7, 4.7, "How React Mounts into the Browser", RGBColor(186, 230, 253), CARD_BG, ACCENT_BLUE)
     code_mount = (
         "// src/main.jsx - Execution Bridge\n"
         "import React from 'react';\n"
@@ -500,7 +504,7 @@ def build_deck():
     slide9 = prs.slides.add_slide(blank_layout)
     add_header(slide9, "Module 06", "JSX Syntax & Core Rules", "Demystifying JavaScript XML, compiler transpilation, and strict syntactic guidelines")
     
-    add_card(slide9, 0.8, 2.2, 5.7, 4.7, "What is JSX Under the Hood?", ACCENT_AMBER)
+    add_card(slide9, 0.8, 2.2, 5.7, 4.7, "What is JSX Under the Hood?", RGBColor(253, 230, 138), CARD_BG, ACCENT_AMBER)
     tb_j1 = slide9.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(1.8))
     tf_j1 = tb_j1.text_frame
     tf_j1.word_wrap = True
@@ -519,14 +523,14 @@ def build_deck():
     )
     add_code_box(slide9, 1.05, 4.6, 5.2, 2.0, code_trans)
 
-    add_card(slide9, 6.8, 2.2, 5.7, 4.7, "The 4 Mandatory Rules of JSX", ACCENT_GREEN)
+    add_card(slide9, 6.8, 2.2, 5.7, 4.7, "The 4 Mandatory Rules of JSX", RGBColor(167, 243, 208), CARD_BG, ACCENT_GREEN)
     tb_j2 = slide9.shapes.add_textbox(Inches(7.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_j2 = tb_j2.text_frame
     tf_j2.word_wrap = True
     add_bullet(tf_j2, "1. Single Root Element:", "Every component must return one parent element. Wrap siblings in a React Fragment (<> ... </>) to prevent DOM bloat.")
     add_bullet(tf_j2, "2. Explicit Tag Closing:", "All void elements must be self-closed: <img />, <input />, <br />.")
     add_bullet(tf_j2, "3. camelCase Attributes:", "Use className instead of 'class' (JS keyword) and htmlFor instead of 'for'. Event handlers: onClick, onChange.")
-    add_bullet(tf_j2, "4. Inline Styles as Objects:", "Styles are written as JavaScript objects with camelCase properties: style={{ backgroundColor: '#1E293B' }}.")
+    add_bullet(tf_j2, "4. Inline Styles as Objects:", "Styles are written as JavaScript objects with camelCase properties: style={{ backgroundColor: '#F1F5F9' }}.")
 
     # --------------------------------------------------------------------------
     # SLIDE 10: MODULE 06 (CONT) - DYNAMIC EXPRESSIONS & CONDITIONALS
@@ -534,7 +538,7 @@ def build_deck():
     slide10 = prs.slides.add_slide(blank_layout)
     add_header(slide10, "Module 06 (Practice)", "Dynamic Expressions & Conditional Rendering", "Leveraging curly braces {} to evaluate JavaScript dynamically inside markup")
     
-    add_card(slide10, 0.8, 2.2, 5.7, 4.7, "The Power of Curly Braces {}", ACCENT_CYAN)
+    add_card(slide10, 0.8, 2.2, 5.7, 4.7, "The Power of Curly Braces {}", RGBColor(186, 230, 253), CARD_BG, ACCENT_BLUE)
     tb_e1 = slide10.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_e1 = tb_e1.text_frame
     tf_e1.word_wrap = True
@@ -543,7 +547,7 @@ def build_deck():
     add_bullet(tf_e1, "Expressions vs Statements:", "Only expressions (code that resolves to a value) work inside {}. Statements like 'if', 'for', and 'while' are NOT allowed.")
     add_bullet(tf_e1, "Conditional Rendering:", "Use Ternary Operators (condition ? A : B) and Logical AND (condition && <Component />).")
 
-    add_card(slide10, 6.8, 2.2, 5.7, 4.7, "Practical Code Examples", ACCENT_INDIGO)
+    add_card(slide10, 6.8, 2.2, 5.7, 4.7, "Practical Code Examples", RGBColor(199, 210, 254), CARD_BG, ACCENT_INDIGO)
     code_expr = (
         "function StudentStatus() {\n"
         "  const studentName = 'Amina';\n"
@@ -571,7 +575,7 @@ def build_deck():
     slide11 = prs.slides.add_slide(blank_layout)
     add_header(slide11, "Module 07", "Functional Components Architecture", "Building modular, reusable user interface elements with JavaScript functions")
     
-    add_card(slide11, 0.8, 2.2, 5.7, 4.7, "Component Fundamentals & Rules", ACCENT_GREEN)
+    add_card(slide11, 0.8, 2.2, 5.7, 4.7, "Component Fundamentals & Rules", RGBColor(167, 243, 208), CARD_BG, ACCENT_GREEN)
     tb_f1 = slide11.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_f1 = tb_f1.text_frame
     tf_f1.word_wrap = True
@@ -580,7 +584,7 @@ def build_deck():
     add_bullet(tf_f1, "Why React Enforces PascalCase:", "React distinguishes between built-in HTML tags (<button>, <div>) and custom components (<Button />).")
     add_bullet(tf_f1, "Default vs Named Exports:", "Default export (one per file: export default App) vs Named export (multiple reusable items: export function Badge).")
 
-    add_card(slide11, 6.8, 2.2, 5.7, 4.7, "Component Composition Example", ACCENT_CYAN)
+    add_card(slide11, 6.8, 2.2, 5.7, 4.7, "Component Composition Example", RGBColor(186, 230, 253), CARD_BG, ACCENT_BLUE)
     code_comp = (
         "// 1. Reusable Child Component (Named Export)\n"
         "export function SkillBadge({ skill }) {\n"
@@ -609,14 +613,14 @@ def build_deck():
     add_header(slide12, "Module 08", "Component Rendering & Composition", "How React triggers renders, evaluates component trees, and commits changes to the screen")
     
     stages = [
-        ("Phase 1: Triggering", "A render is triggered by initial application mounting (createRoot) or state/prop updates.", ACCENT_CYAN),
-        ("Phase 2: Rendering", "React executes your component function to calculate what JSX markup needs to appear on screen.", ACCENT_AMBER),
-        ("Phase 3: Committing", "React compares the new tree with the previous tree and updates only modified real DOM nodes.", ACCENT_GREEN)
+        ("Phase 1: Triggering", "A render is triggered by initial application mounting (createRoot) or state/prop updates.", ACCENT_BLUE, RGBColor(186, 230, 253)),
+        ("Phase 2: Rendering", "React executes your component function to calculate what JSX markup needs to appear on screen.", ACCENT_AMBER, RGBColor(253, 230, 138)),
+        ("Phase 3: Committing", "React compares the new tree with the previous tree and updates only modified real DOM nodes.", ACCENT_GREEN, RGBColor(167, 243, 208))
     ]
     
-    for idx, (title, desc, color) in enumerate(stages):
+    for idx, (title, desc, color, border_c) in enumerate(stages):
         left = 0.8 + idx * 4.0
-        c = add_card(slide12, left, 2.2, 3.733, 4.7, title, color, CARD_BG)
+        c = add_card(slide12, left, 2.2, 3.733, 4.7, title, border_c, CARD_BG, color)
         tb_st = slide12.shapes.add_textbox(Inches(left + 0.2), Inches(2.8), Inches(3.333), Inches(3.8))
         tf_st = tb_st.text_frame
         tf_st.word_wrap = True
@@ -644,7 +648,7 @@ def build_deck():
     slide13 = prs.slides.add_slide(blank_layout)
     add_header(slide13, "Module 08 (Lists)", "Dynamic List Rendering & The 'key' Prop", "Rendering collections with JavaScript's .map() and why unique keys are mandatory")
     
-    add_card(slide13, 0.8, 2.2, 5.7, 4.7, "The Rule of Keys in React Lists", ACCENT_ROSE)
+    add_card(slide13, 0.8, 2.2, 5.7, 4.7, "The Rule of Keys in React Lists", RGBColor(254, 205, 211), CARD_BG, ACCENT_ROSE)
     tb_k1 = slide13.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_k1 = tb_k1.text_frame
     tf_k1.word_wrap = True
@@ -653,7 +657,7 @@ def build_deck():
     add_bullet(tf_k1, "The Pitfall of Array Index:", "Using index as a key (key={index}) breaks input focus and component state if items are filtered or sorted.")
     add_bullet(tf_k1, "Golden Rule:", "Always use a unique and permanent identifier from your data (e.g., student.id or rollNo).")
 
-    add_card(slide13, 6.8, 2.2, 5.7, 4.7, "List Rendering Code Example", ACCENT_GREEN)
+    add_card(slide13, 6.8, 2.2, 5.7, 4.7, "List Rendering Code Example", RGBColor(167, 243, 208), CARD_BG, ACCENT_GREEN)
     code_list = (
         "const students = [\n"
         "  { id: 'S101', name: 'Aarav', dept: 'CSE', gpa: 8.9 },\n"
@@ -686,7 +690,7 @@ def build_deck():
     slide14 = prs.slides.add_slide(blank_layout)
     add_header(slide14, "Module 09 (Hands-on Lab)", "Practical Project: Student Profile Dashboard", "Assembling a responsive, multi-component student dashboard using React & Vite")
     
-    add_card(slide14, 0.8, 2.2, 5.7, 4.7, "Component Architecture Breakdown", ACCENT_CYAN)
+    add_card(slide14, 0.8, 2.2, 5.7, 4.7, "Component Architecture Breakdown", RGBColor(186, 230, 253), CARD_BG, ACCENT_BLUE)
     tb_d1 = slide14.shapes.add_textbox(Inches(1.05), Inches(2.8), Inches(5.2), Inches(3.8))
     tf_d1 = tb_d1.text_frame
     tf_d1.word_wrap = True
@@ -697,7 +701,7 @@ def build_deck():
     add_bullet(tf_d1, "SkillsList.jsx:", "Dynamically maps over technical skills array rendering styled badge components.")
     add_bullet(tf_d1, "ContactCard.jsx:", "Active links for email, phone, GitHub, and LinkedIn profiles.")
 
-    add_card(slide14, 6.8, 2.2, 5.7, 4.7, "Execution & Build Checklist", ACCENT_INDIGO)
+    add_card(slide14, 6.8, 2.2, 5.7, 4.7, "Execution & Build Checklist", RGBColor(199, 210, 254), CARD_BG, ACCENT_INDIGO)
     code_dash = (
         "# 1. Initialize Vite project in workspace\n"
         "npm create vite@latest student-dashboard -- --template react\n"
@@ -760,7 +764,7 @@ def build_deck():
     slide16 = prs.slides.add_slide(blank_layout)
     add_header(slide16, "Module 10 (Coding Drills)", "Placement Focus: Live Coding Challenge Patterns", "Practical coding challenges commonly presented during technical screening rounds")
     
-    add_card(slide16, 0.8, 2.2, 5.7, 4.7, "Challenge 1: Bounded Counter with Limits", ACCENT_CYAN)
+    add_card(slide16, 0.8, 2.2, 5.7, 4.7, "Challenge 1: Bounded Counter with Limits", RGBColor(186, 230, 253), CARD_BG, ACCENT_BLUE)
     code_ch1 = (
         "// Task: Counter with Min: 0, Max: 10 limits\n"
         "function BoundedCounter() {\n"
@@ -786,7 +790,7 @@ def build_deck():
     )
     add_code_box(slide16, 1.05, 2.8, 5.2, 3.8, code_ch1)
 
-    add_card(slide16, 6.8, 2.2, 5.7, 4.7, "Challenge 2: Conditional Candidate List", ACCENT_GREEN)
+    add_card(slide16, 6.8, 2.2, 5.7, 4.7, "Challenge 2: Conditional Candidate List", RGBColor(167, 243, 208), CARD_BG, ACCENT_GREEN)
     code_ch2 = (
         "// Task: Render list with conditional status badge\n"
         "function CandidateList({ candidates }) {\n"
@@ -817,21 +821,21 @@ def build_deck():
     add_header(slide17, "Wrap Up", "Core React Concepts Summary & Cheat Sheet", "Essential principles to remember for professional development and placement interviews")
     
     cards_data = [
-        ("Declarative UI", "Describe WHAT should be rendered for the current state (UI = f(State)). React handles all DOM updates automatically.", ACCENT_CYAN),
-        ("Virtual DOM", "In-memory tree compared using an O(n) diffing algorithm. Only differences are batched to the Real DOM.", ACCENT_INDIGO),
-        ("Vite Speed", "Native browser ES Modules + esbuild (Go) yields sub-second dev startup and instant HMR.", ACCENT_GREEN),
-        ("JSX Rules", "Must return single root (use Fragments <>), close all tags (<img />), camelCase attributes (className).", ACCENT_AMBER),
-        ("Components", "Must use PascalCase (ProfileCard). LEGO-like composition of small, reusable, single-responsibility functions.", ACCENT_ROSE),
-        ("List Keys", "Mandatory key prop using stable IDs (not array index) for reliable reconciliation during array mapping.", ACCENT_CYAN)
+        ("Declarative UI", "Describe WHAT should be rendered for the current state (UI = f(State)). React handles all DOM updates automatically.", ACCENT_BLUE, RGBColor(186, 230, 253)),
+        ("Virtual DOM", "In-memory tree compared using an O(n) diffing algorithm. Only differences are batched to the Real DOM.", ACCENT_INDIGO, RGBColor(199, 210, 254)),
+        ("Vite Speed", "Native browser ES Modules + esbuild (Go) yields sub-second dev startup and instant HMR.", ACCENT_GREEN, RGBColor(167, 243, 208)),
+        ("JSX Rules", "Must return single root (use Fragments <>), close all tags (<img />), camelCase attributes (className).", ACCENT_AMBER, RGBColor(253, 230, 138)),
+        ("Components", "Must use PascalCase (ProfileCard). LEGO-like composition of small, reusable, single-responsibility functions.", ACCENT_ROSE, RGBColor(254, 205, 211)),
+        ("List Keys", "Mandatory key prop using stable IDs (not array index) for reliable reconciliation during array mapping.", ACCENT_BLUE, RGBColor(186, 230, 253))
     ]
     
-    for idx, (title, desc, color) in enumerate(cards_data):
+    for idx, (title, desc, color, border_c) in enumerate(cards_data):
         col = idx % 3
         row = idx // 3
         left = 0.8 + col * 4.0
         top = 2.2 + row * 2.3
         
-        c = add_card(slide17, left, top, 3.733, 2.1, title, color, CARD_BG)
+        c = add_card(slide17, left, top, 3.733, 2.1, title, border_c, CARD_BG, color)
         tb_sm = slide17.shapes.add_textbox(Inches(left + 0.2), Inches(top + 0.7), Inches(3.333), Inches(1.3))
         tf_sm = tb_sm.text_frame
         tf_sm.word_wrap = True
@@ -846,7 +850,7 @@ def build_deck():
     # Save presentation
     output_path = "e:\\mohammed sathak\\React_and_JSX_Masterclass.pptx"
     prs.save(output_path)
-    print(f"Presentation saved successfully to: {output_path}")
+    print(f"Light-themed presentation saved successfully to: {output_path}")
 
 if __name__ == '__main__':
     build_deck()
