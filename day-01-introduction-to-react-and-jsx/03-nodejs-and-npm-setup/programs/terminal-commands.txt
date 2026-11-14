@@ -1,22 +1,14 @@
-# Practical: Terminal Commands Practiced & Verified
-# Fill in your output after running each command in your terminal
+# Core Node and npm Commands
 
-1. Verify Node.js Version:
-Command: node -v
-Output: 
+# 1. Check installed versions
+node -v
+npm -v
 
-2. Verify npm Version:
-Command: npm -v
-Output: 
+# 2. Run a JavaScript file with Node
+node node-demo.js
 
-3. Initialize a Test Package:
-Command: npm init -y
-Output: 
+# 3. Initialize a project
+npm init -y
 
-4. Install a Package:
-Command: npm install <package-name>
-Output: 
-
-5. Check Package Installation in package.json:
-Inspected fields: dependencies, devDependencies
-
+# 4. Install a package
+npm install canvas-confetti

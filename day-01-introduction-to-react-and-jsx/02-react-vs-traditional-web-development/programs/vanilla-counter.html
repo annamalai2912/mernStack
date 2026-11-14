@@ -1,41 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Practical: Vanilla JS Imperative DOM Manipulation</title>
-  <style>
-    body { font-family: sans-serif; padding: 24px; }
-    .counter-card { border: 1px solid #ccc; padding: 16px; border-radius: 8px; max-width: 300px; }
-    button { padding: 8px 16px; margin: 4px; cursor: pointer; }
-  </style>
+  <title>Vanilla JS Counter</title>
 </head>
-<body>
+<body style="font-family: sans-serif; padding: 20px;">
+  <h2>Vanilla JS (Manual DOM)</h2>
+  <p>Count: <span id="count">0</span></p>
 
-  <div class="counter-card">
-    <h2>Vanilla JS Counter</h2>
-    <p id="countDisplay">Current Count: 0</p>
-    <button id="incrementBtn">+ Increment</button>
-    <button id="resetBtn">Reset</button>
-  </div>
+  <button onclick="increment()">+1</button>
+  <button onclick="reset()">Reset</button>
 
   <script>
-    // Practical Practice: Imperative DOM Manipulation
-    // Notice how you have to manually query the DOM and update innerText
     let count = 0;
-    const countDisplay = document.getElementById("countDisplay");
-    const incrementBtn = document.getElementById("incrementBtn");
-    const resetBtn = document.getElementById("resetBtn");
 
-    incrementBtn.addEventListener("click", () => {
+    function increment() {
       count++;
-      countDisplay.innerText = `Current Count: ${count}`;
-    });
+      document.getElementById("count").innerText = count;
+    }
 
-    resetBtn.addEventListener("click", () => {
+    function reset() {
       count = 0;
-      countDisplay.innerText = `Current Count: ${count}`;
-    });
+      document.getElementById("count").innerText = count;
+    }
   </script>
 </body>
 </html>
-

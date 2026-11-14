@@ -1,33 +1,19 @@
-# Vite React Project Setup Guide
+# Vite React Setup Guide
 
-### Step 1: Create a New Vite React Project
-Run in your terminal (PowerShell, Command Prompt, or Bash):
+Run these 4 commands in your terminal to create and run a React project:
+
 ```bash
+# 1. Create the project
 npm create vite@latest student-portal -- --template react
-```
 
-### Step 2: Navigate into the Project Folder
-```bash
+# 2. Enter project folder
 cd student-portal
-```
 
-### Step 3: Install Required Dependencies
-```bash
+# 3. Install packages
 npm install
-```
 
-### Step 4: Start the Local Development Server
-```bash
+# 4. Start local development server
 npm run dev
 ```
 
-### Step 5: Open in Browser
-Visit the printed local URL (typically `http://localhost:5173/` or `http://localhost:3000/`).
-
----
-
-### Key Project Files Created:
-- `index.html`: The single HTML shell containing `<div id="root"></div>`
-- `src/main.jsx`: The React mount entry point using `ReactDOM.createRoot`
-- `src/App.jsx`: The root component displaying the initial UI
-- `package.json`: Project metadata, dependencies, and build scripts (`dev`, `build`, `preview`)
+Open `http://localhost:5173/` in your browser.
