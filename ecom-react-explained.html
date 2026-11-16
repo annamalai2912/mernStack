@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopReact — React Components Explained</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f8ff;
+      --surface: #ffffff;
+      --border: #dde4f5;
+      --text: #0f1b35;
+      --text-soft: #5a6a90;
+      --accent: #3b6fd4;
+      --accent-soft: #edf2ff;
+      --comp: #2a5fc5;
+      --comp-bg: #edf2ff;
+      --hook: #6836c9;
+      --hook-bg: #f4efff;
+      --prop: #1a7a5c;
+      --prop-bg: #eafaf4;
+      --highlight: rgba(59, 111, 212, 0.1);
+      --highlight-border: rgba(59, 111, 212, 0.45);
+    }
+
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── TOP TEACHING BAR ── */
+    .teaching-bar {
+      background: #0f1b35;
+      color: #c8d6f0;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 13px;
+    }
+    .teaching-bar span { color: #7eb3ff; font-weight: 600; }
+
+    /* ── EXPLANATION PANEL ── */
+    .explain-panel {
+      position: fixed;
+      right: 0; top: 0; bottom: 0;
+      width: 380px;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      padding: 24px;
+      overflow-y: auto;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform .3s ease;
+      box-shadow: -4px 0 24px rgba(59,111,212,0.1);
+    }
+    .explain-panel.open { transform: translateX(0); }
+
+    .ep-header { margin-bottom: 20px; }
+    .ep-tag {
+      display: inline-block;
+      font-family: 'Menlo', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      margin-right: 6px;
+    }
+    .ep-tag.comp { background: var(--comp-bg); color: var(--comp); border: 1px solid #c0d0f8; }
+    .ep-tag.hook { background: var(--hook-bg); color: var(--hook); border: 1px solid #d4c4f5; }
+    .ep-tag.prop { background: var(--prop-bg); color: var(--prop); border: 1px solid #a8e0cc; }
+    .ep-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .ep-subtitle { font-size: 13px; color: var(--text-soft); }
+
+    .ep-section { margin-bottom: 18px; }
+    .ep-section h4 { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-soft); margin-bottom: 6px; }
+    .ep-section p { font-size: 13px; color: var(--text-soft); line-height: 1.65; }
+
+    .ep-code {
+      background: #f0f4ff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: 'Menlo', monospace;
+      font-size: 11.5px;
+      line-height: 1.65;
+      overflow-x: auto;
+      white-space: pre;
+      margin-top: 8px;
+    }
+    .kw { color: #6836c9; font-weight: 600; }
+    .fn { color: #2a5fc5; }
+    .str { color: #1a7a5c; }
+    .cmt { color: #8fa0c8; font-style: italic; }
+    .tag { color: #c9490e; }
+    .attr { color: #2672c8; }
+
+    .ep-why {
+      background: var(--accent-soft);
+      border: 1px solid #c0d0f8;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 13px;
+      color: var(--accent);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    .props-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .prop-chip {
+      background: var(--prop-bg);
+      color: var(--prop);
+      border: 1px solid #a8e0cc;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: monospace;
+      font-size: 11px;
+    }
+
+    .ep-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: 1px solid var(--border);
+      width: 28px; height: 28px; border-radius: 50%;
+      cursor: pointer; font-size: 14px; color: var(--text-soft);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ep-close:hover { background: var(--border); }
+
+    /* ── HOVERABLE ── */
+    .hov {
+      position: relative;
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      transition: outline-color .2s, background .2s;
+      cursor: help;
+    }
+    .hov:hover {
+      outline-color: var(--highlight-border);
+      background: var(--highlight);
+    }
+    .hov-label {
+      position: absolute;
+      top: -24px; left: 0;
+      background: #0f1b35;
+      color: #7eb3ff;
+      font-size: 10px;
+      font-family: monospace;
+      padding: 2px 8px;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s;
+      white-space: nowrap;
+      z-index: 50;
+    }
+    .hov:hover .hov-label { opacity: 1; }
+
+    /* ══════════════════════════════
+       ECOMMERCE SITE STYLES (same layout as HTML version)
+    ══════════════════════════════ */
+
+    /* ── NAVBAR ── */
+    .site-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      height: 64px;
+      gap: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo { font-size: 20px; font-weight: 800; letter-spacing: -1px; color: var(--accent); flex: 0 0 auto; margin-right: 36px; }
+    .nav-links { display: flex; gap: 4px; flex: 1; list-style: none; }
+    .nav-link { padding: 8px 14px; font-size: 14px; color: var(--text-soft); border-radius: 6px; text-decoration: none; transition: background .15s, color .15s; }
+    .nav-link:hover, .nav-link.active { background: var(--bg); color: var(--text); }
+    .nav-actions { display: flex; gap: 8px; align-items: center; }
+    .nav-btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+    .nav-btn.outline { background: none; border: 1px solid var(--border); color: var(--text); }
+    .nav-btn.filled { background: var(--accent); color: white; }
+    .nav-search { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; width: 180px; background: var(--bg); }
+
+    /* ── HERO ── */
+    .site-hero {
+      background: linear-gradient(135deg, #e8eeff 0%, #f0f4ff 100%);
+      padding: 72px 48px;
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .hero-text { flex: 1; min-width: 260px; }
+    .hero-text h1 { font-size: 42px; font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+    .hero-text p  { font-size: 16px; color: var(--text-soft); margin-bottom: 24px; }
+    .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-primary { background: var(--accent); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
+    .btn-secondary { background: white; color: var(--text); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; border: 1px solid var(--border); cursor: pointer; }
+    .hero-img { flex: 0 0 320px; height: 220px; background: #dde4f5; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+
+    /* ── SECTION ── */
+    .section-wrap { max-width: 1100px; margin: 0 auto; padding: 48px 32px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .section-head h2 { font-size: 22px; font-weight: 700; }
+    .section-head a { font-size: 13px; color: var(--accent); text-decoration: none; }
+
+    /* ── PRODUCT GRID ── */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .product-card:hover { box-shadow: 0 8px 24px rgba(59,111,212,0.1); }
+    .product-img { height: 180px; display: flex; align-items: center; justify-content: center; font-size: 48px; background: var(--bg); }
+    .product-info { padding: 14px 16px; }
+    .product-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .product-price { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .product-price s { color: var(--text-soft); font-size: 13px; font-weight: 400; margin-left: 6px; }
+    .product-stars { font-size: 12px; color: #c09b1a; margin-bottom: 10px; }
+    .product-btn { width: 100%; padding: 9px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    /* ── CATEGORIES ── */
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 14px; text-align: center; cursor: pointer; transition: background .15s; }
+    .cat-card:hover { background: var(--accent-soft); border-color: #c0d0f8; }
+    .cat-icon { font-size: 32px; margin-bottom: 8px; }
+    .cat-name { font-size: 13px; font-weight: 600; }
+
+    /* ── BANNER ── */
+    .promo-banner { background: #e8eeff; border: 1px solid var(--border); border-radius: 12px; padding: 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .promo-banner h3 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .promo-banner p  { color: var(--text-soft); font-size: 14px; }
+
+    /* ── FOOTER ── */
+    .site-footer { background: #0f1b35; color: #8fa0c8; padding: 48px 32px 24px; margin-top: 60px; }
+    .footer-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 32px; margin-bottom: 40px; }
+    .footer-col h4 { color: #c8d6f0; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    .footer-col a { display: block; color: #8fa0c8; font-size: 13px; text-decoration: none; margin-bottom: 8px; }
+    .footer-bottom { max-width: 1100px; margin: 0 auto; border-top: 1px solid #1e3060; padding-top: 20px; font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+    /* ── CART BADGE ── */
+    .cart-badge { background: #e53e3e; color: white; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; vertical-align: middle; margin-left: 4px; }
+
+    /* Layout adjust for panel */
+    .site-wrap { transition: margin-right .3s; }
+    .site-wrap.panel-open { margin-right: 380px; }
+
+    @media(max-width: 700px) { .explain-panel { width: 100%; } .site-wrap.panel-open { margin-right: 0; } }
+  </style>
+</head>
+<body>
+
+<div class="teaching-bar">
+  <span>Hover over any highlighted element</span> to see the React component name. Click to learn what it does and why React uses it.
+</div>
+
+<!-- EXPLANATION PANEL -->
+<div class="explain-panel" id="explainPanel">
+  <button class="ep-close" onclick="closePanel()">✕</button>
+  <div id="epContent"></div>
+</div>
+
+<!-- SITE WRAPPER -->
+<div class="site-wrap" id="siteWrap">
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="site-nav hov" onclick="showExplanation('navbar')" title="Click to explain">
+    <span class="hov-label">&lt;Navbar /&gt;</span>
+
+    <div class="nav-logo hov" onclick="showExplanation('logo');event.stopPropagation();">
+      <span class="hov-label">&lt;Logo /&gt;</span>
+      ShopReact
+    </div>
+
+    <ul class="nav-links" onclick="event.stopPropagation();">
+      <li class="hov" onclick="showExplanation('navlinks');event.stopPropagation();">
+        <span class="hov-label">&lt;NavLinks /&gt; props.links</span>
+        <a class="nav-link active" href="#">Home</a>
+      </li>
+      <li style="list-style:none"><a class="nav-link" href="#">Shop</a></li>
+      <li style="list-style:none"><a class="nav-link" href="#">Collections</a></li>
+      <li style="list-style:none"><a class="nav-link" href="#">About</a></li>
+    </ul>
+
+    <div class="nav-actions" onclick="event.stopPropagation();">
+      <input class="nav-search hov" type="text" placeholder="Search products…"
+        onclick="showExplanation('search');event.stopPropagation();">
+      <span class="hov-label">&lt;SearchBar /&gt; useState</span>
+      <button class="nav-btn outline hov" onclick="showExplanation('loginbtn');event.stopPropagation();">
+        <span class="hov-label">&lt;AuthButton /&gt;</span>
+        Sign in
+      </button>
+      <button class="nav-btn filled hov" onclick="showExplanation('cartbtn');event.stopPropagation();">
+        <span class="hov-label">&lt;CartButton /&gt; useState</span>
+        🛒 Cart <span class="cart-badge" id="cartCount">3</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="site-hero hov" onclick="showExplanation('hero')">
+    <span class="hov-label">&lt;HeroBanner /&gt;</span>
+    <div class="hero-text">
+      <h1 class="hov" onclick="showExplanation('h1');event.stopPropagation();">
+        <span class="hov-label">props.title</span>
+        Style that moves with you.
+      </h1>
+      <p class="hov" onclick="showExplanation('herop');event.stopPropagation();">
+        <span class="hov-label">props.subtitle</span>
+        Discover our new autumn collection — crafted for comfort, designed for life.
+      </p>
+      <div class="hero-cta">
+        <button class="btn-primary hov" onclick="showExplanation('ctabtn');event.stopPropagation();">
+          <span class="hov-label">props.primaryCTA</span>
+          Shop Now
+        </button>
+        <button class="btn-secondary hov" onclick="showExplanation('ctabtn2');event.stopPropagation();">
+          <span class="hov-label">props.secondaryCTA</span>
+          View Lookbook
+        </button>
+      </div>
+    </div>
+    <div class="hero-img hov" onclick="showExplanation('heroimg');event.stopPropagation();">
+      <span class="hov-label">props.image</span>
+      🧥
+    </div>
+  </section>
+
+  <!-- ══ CATEGORIES ══ -->
+  <div class="section-wrap">
+    <div class="section-head hov" onclick="showExplanation('sectionhead')">
+      <span class="hov-label">&lt;SectionHeader /&gt;</span>
+      <h2>Browse Categories</h2>
+      <a href="#">View all →</a>
+    </div>
+    <div class="cat-grid hov" onclick="showExplanation('catgrid')">
+      <span class="hov-label">&lt;CategoryGrid /&gt; .map()</span>
+      <div class="cat-card" onclick="event.stopPropagation()">
+        <div class="cat-icon">👗</div><div class="cat-name">Women</div>
+      </div>
+      <div class="cat-card" onclick="event.stopPropagation()">
+        <div class="cat-icon">👔</div><div class="cat-name">Men</div>
+      </div>
+      <div class="cat-card" onclick="event.stopPropagation()">
+        <div class="cat-icon">👟</div><div class="cat-name">Footwear</div>
+      </div>
+      <div class="cat-card" onclick="event.stopPropagation()">
+        <div class="cat-icon">👜</div><div class="cat-name">Bags</div>
+      </div>
+      <div class="cat-card" onclick="event.stopPropagation()">
+        <div class="cat-icon">⌚</div><div class="cat-name">Watches</div>
+      </div>
+      <div class="cat-card" onclick="event.stopPropagation()">
+        <div class="cat-icon">🕶️</div><div class="cat-name">Accessories</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PRODUCT GRID ══ -->
+  <div class="section-wrap" style="padding-top:0;">
+    <div class="section-head hov" onclick="showExplanation('productlist')">
+      <span class="hov-label">&lt;ProductList /&gt;</span>
+      <h2>Featured Products</h2>
+      <a href="#">See more →</a>
+    </div>
+    <div class="product-grid">
+      <!-- Each card is a <ProductCard /> component -->
+      <div class="product-card hov" onclick="showExplanation('productcard')">
+        <span class="hov-label">&lt;ProductCard /&gt; key=1</span>
+        <div class="product-img" style="background:#f0f4ff;">👗</div>
+        <div class="product-info">
+          <div class="product-name">Summer Linen Dress</div>
+          <div class="product-price">₹1,299 <s>₹1,999</s></div>
+          <div class="product-stars">★★★★☆ (128)</div>
+          <button class="product-btn">Add to Cart</button>
+        </div>
+      </div>
+      <div class="product-card hov" onclick="showExplanation('productcard')">
+        <span class="hov-label">&lt;ProductCard /&gt; key=2</span>
+        <div class="product-img" style="background:#f5f0ff;">👔</div>
+        <div class="product-info">
+          <div class="product-name">Classic Oxford Shirt</div>
+          <div class="product-price">₹899 <s>₹1,499</s></div>
+          <div class="product-stars">★★★★★ (256)</div>
+          <button class="product-btn">Add to Cart</button>
+        </div>
+      </div>
+      <div class="product-card hov" onclick="showExplanation('productcard')">
+        <span class="hov-label">&lt;ProductCard /&gt; key=3</span>
+        <div class="product-img" style="background:#eafaf4;">👟</div>
+        <div class="product-info">
+          <div class="product-name">Urban Runner Sneakers</div>
+          <div class="product-price">₹2,499 <s>₹3,499</s></div>
+          <div class="product-stars">★★★★☆ (89)</div>
+          <button class="product-btn">Add to Cart</button>
+        </div>
+      </div>
+      <div class="product-card hov" onclick="showExplanation('productcard')">
+        <span class="hov-label">&lt;ProductCard /&gt; key=4</span>
+        <div class="product-img" style="background:#fff8ea;">👜</div>
+        <div class="product-info">
+          <div class="product-name">Canvas Tote Bag</div>
+          <div class="product-price">₹649 <s>₹999</s></div>
+          <div class="product-stars">★★★★☆ (312)</div>
+          <button class="product-btn">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROMO BANNER ══ -->
+  <div class="section-wrap">
+    <div class="promo-banner hov" onclick="showExplanation('promo')">
+      <span class="hov-label">&lt;PromoBanner /&gt;</span>
+      <div>
+        <h3>Get 20% off your first order</h3>
+        <p>Sign up for our newsletter and unlock exclusive member deals.</p>
+      </div>
+      <button class="btn-primary hov" onclick="showExplanation('promobtn');event.stopPropagation();">
+        <span class="hov-label">props.onSubscribe</span>
+        Subscribe Now
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="site-footer hov" onclick="showExplanation('footer')">
+    <span class="hov-label">&lt;Footer /&gt;</span>
+    <div class="footer-grid">
+      <div class="footer-col hov" onclick="showExplanation('footercol');event.stopPropagation();">
+        <span class="hov-label">&lt;FooterColumn /&gt;</span>
+        <h4>ShopReact</h4>
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-col hov" onclick="showExplanation('footercol');event.stopPropagation();">
+        <span class="hov-label">&lt;FooterColumn /&gt;</span>
+        <h4>Customer Care</h4>
+        <a href="#">Contact Us</a>
+        <a href="#">Returns</a>
+        <a href="#">Track Order</a>
+      </div>
+      <div class="footer-col hov" onclick="showExplanation('footercol');event.stopPropagation();">
+        <span class="hov-label">&lt;FooterColumn /&gt;</span>
+        <h4>Help</h4>
+        <a href="#">FAQs</a>
+        <a href="#">Shipping Info</a>
+        <a href="#">Size Guide</a>
+      </div>
+      <div class="footer-col hov" onclick="showExplanation('footercol');event.stopPropagation();">
+        <span class="hov-label">&lt;FooterColumn /&gt;</span>
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 ShopReact. All rights reserved.</span>
+      <span>Built with React ⚛️</span>
+    </div>
+  </footer>
+
+</div><!-- /site-wrap -->
+
+<script>
+/* ═══════════════════════════════════════════
+   EXPLANATION DATA — React Components
+═══════════════════════════════════════════ */
+const explanations = {
+
+  navbar: {
+    tags: [{ label: '<Navbar />', cls: 'comp' }, { label: 'function component', cls: 'prop' }],
+    title: 'Navbar Component',
+    subtitle: 'The top navigation bar — rendered once, reused everywhere',
+    what: 'In React, the entire navigation bar is a single reusable component called <Navbar />. It receives props like cartCount and links, and manages its own internal state for the active link.',
+    code: `<span class="kw">function</span> <span class="fn">Navbar</span>({ links, cartCount }) {
+  <span class="kw">const</span> [active, setActive] = <span class="fn">useState</span>(<span class="str">"Home"</span>);
+  <span class="kw">return</span> (
+    <span class="tag">&lt;nav</span> <span class="attr">className</span>=<span class="str">"site-nav"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;Logo /&gt;</span>
+      <span class="tag">&lt;NavLinks</span> <span class="attr">links</span>={links} <span class="attr">active</span>={active} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;CartButton</span> <span class="attr">count</span>={cartCount} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/nav&gt;</span>
+  );
+}`,
+    props: ['links', 'cartCount', 'onNavigate'],
+    why: '✅ In plain HTML, you copy-paste the navbar on every page. In React, you write <Navbar /> once and drop it into any page. Change it once → updates everywhere.'
+  },
+
+  logo: {
+    tags: [{ label: '<Logo />', cls: 'comp' }, { label: 'props.brandName', cls: 'prop' }],
+    title: 'Logo Component',
+    subtitle: 'Brand identity — a small reusable piece',
+    what: 'Even something as simple as the logo can be its own React component. This makes it easy to change the brand name, add an image, or swap logos for A/B testing — all from one place.',
+    code: `<span class="kw">function</span> <span class="fn">Logo</span>({ brandName }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"/"</span> <span class="attr">className</span>=<span class="str">"nav-logo"</span><span class="tag">&gt;</span>
+      {brandName}
+    <span class="tag">&lt;/a&gt;</span>
+  );
+}
+
+<span class="cmt">// Used as:</span>
+<span class="tag">&lt;Logo</span> <span class="attr">brandName</span>=<span class="str">"ShopReact"</span> <span class="tag">/&gt;</span>`,
+    props: ['brandName', 'href', 'logoImg'],
+    why: '✅ Composability: React encourages breaking even small UI pieces into components. Swap the logo globally by changing one prop.'
+  },
+
+  navlinks: {
+    tags: [{ label: '<NavLinks />', cls: 'comp' }, { label: 'props.links', cls: 'prop' }, { label: 'useState', cls: 'hook' }],
+    title: 'NavLinks Component',
+    subtitle: 'Navigation items rendered from an array using .map()',
+    what: 'Instead of hardcoding each <li> in HTML, React generates all nav links from an array. The active link is tracked with useState — no DOM manipulation needed.',
+    code: `<span class="kw">const</span> links = [<span class="str">"Home"</span>, <span class="str">"Shop"</span>, <span class="str">"Collections"</span>, <span class="str">"About"</span>];
+
+<span class="kw">function</span> <span class="fn">NavLinks</span>({ links }) {
+  <span class="kw">const</span> [active, setActive] = <span class="fn">useState</span>(<span class="str">"Home"</span>);
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul</span> <span class="attr">className</span>=<span class="str">"nav-links"</span><span class="tag">&gt;</span>
+      {links.<span class="fn">map</span>(link =&gt; (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={link}<span class="tag">&gt;</span>
+          <span class="tag">&lt;a</span>
+            <span class="attr">className</span>={active === link ? <span class="str">"active"</span> : <span class="str">""</span>}
+            <span class="attr">onClick</span>={() =&gt; <span class="fn">setActive</span>(link)}
+          <span class="tag">&gt;</span>{link}<span class="tag">&lt;/a&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}`,
+    props: ['links[ ]', 'active', 'onNavigate'],
+    why: '✅ To add a new nav link, just push to the array. React re-renders the list automatically. In HTML you must manually add a new <li> on every page.'
+  },
+
+  search: {
+    tags: [{ label: '<SearchBar />', cls: 'comp' }, { label: 'useState', cls: 'hook' }],
+    title: 'SearchBar — Controlled Input',
+    subtitle: 'React controls the input value with useState',
+    what: 'This is a controlled input. React\'s useState hook stores what the user types in real time. The input\'s value is always in sync with state — React is the "single source of truth".',
+    code: `<span class="kw">function</span> <span class="fn">SearchBar</span>({ onSearch }) {
+  <span class="kw">const</span> [query, setQuery] = <span class="fn">useState</span>(<span class="str">""</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;input</span>
+      <span class="attr">type</span>=<span class="str">"text"</span>
+      <span class="attr">value</span>={query}
+      <span class="attr">placeholder</span>=<span class="str">"Search products…"</span>
+      <span class="attr">onChange</span>={e =&gt; <span class="fn">setQuery</span>(e.target.value)}
+      <span class="attr">onKeyDown</span>={e =&gt; e.key === <span class="str">"Enter"</span> &amp;&amp; <span class="fn">onSearch</span>(query)}
+    <span class="tag">/&gt;</span>
+  );
+}`,
+    props: ['onSearch(query)', 'placeholder', 'defaultValue'],
+    why: '✅ In HTML, you read input.value via getElementById at submit time. React stores every keystroke in state, so you can filter results live as the user types — no DOM queries needed.'
+  },
+
+  cartbtn: {
+    tags: [{ label: '<CartButton />', cls: 'comp' }, { label: 'useState', cls: 'hook' }],
+    title: 'CartButton — State-Driven Badge',
+    subtitle: 'Item count lives in state; UI updates automatically',
+    what: 'The cart count badge is driven by useState. When a user adds a product, the parent component calls setCartCount(). React automatically re-renders the badge with the new number.',
+    code: `<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [cartCount, setCartCount] = <span class="fn">useState</span>(0);
+
+  <span class="kw">const</span> addToCart = () =&gt; <span class="fn">setCartCount</span>(c =&gt; c + 1);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;Navbar</span> <span class="attr">cartCount</span>={cartCount} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;ProductList</span> <span class="attr">onAddToCart</span>={addToCart} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// CartButton inside Navbar:</span>
+<span class="tag">&lt;button&gt;</span>🛒 Cart <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"badge"</span><span class="tag">&gt;</span>{cartCount}<span class="tag">&lt;/span&gt;&lt;/button&gt;</span>`,
+    props: ['count', 'onClick'],
+    why: '✅ State flows down via props. When cartCount changes in <App />, React re-renders <Navbar /> and the badge number updates. No manual DOM update: document.getElementById("badge").innerHTML needed.'
+  },
+
+  loginbtn: {
+    tags: [{ label: '<AuthButton />', cls: 'comp' }, { label: 'props.isLoggedIn', cls: 'prop' }],
+    title: 'AuthButton — Conditional Rendering',
+    subtitle: 'Shows "Sign in" or "My Account" based on props',
+    what: 'This button uses conditional rendering — a core React concept. Based on the isLoggedIn prop, it renders different JSX. No if-else in HTML, no classList toggling.',
+    code: `<span class="kw">function</span> <span class="fn">AuthButton</span>({ isLoggedIn, user }) {
+  <span class="kw">if</span> (isLoggedIn) {
+    <span class="kw">return</span> (
+      <span class="tag">&lt;button</span> <span class="attr">className</span>=<span class="str">"nav-btn"</span><span class="tag">&gt;</span>
+        Hi, {user.name}
+      <span class="tag">&lt;/button&gt;</span>
+    );
+  }
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">className</span>=<span class="str">"nav-btn outline"</span><span class="tag">&gt;</span>
+      Sign in
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}`,
+    props: ['isLoggedIn', 'user', 'onLogin'],
+    why: '✅ React lets you write UI logic as JavaScript. Conditional rendering means: "describe what the UI looks like for each state", and React handles the switching.'
+  },
+
+  hero: {
+    tags: [{ label: '<HeroBanner />', cls: 'comp' }, { label: 'props.title', cls: 'prop' }, { label: 'props.image', cls: 'prop' }],
+    title: 'HeroBanner Component',
+    subtitle: 'Reusable banner — different content, same layout',
+    what: 'The hero section is a component. Pass different props and you instantly get a banner for any campaign, season, or product launch — without touching the layout code.',
+    code: `<span class="kw">function</span> <span class="fn">HeroBanner</span>({ title, subtitle, image, primaryCTA, secondaryCTA }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;section</span> <span class="attr">className</span>=<span class="str">"site-hero"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"hero-text"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>{title}<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;p&gt;</span>{subtitle}<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;button&gt;</span>{primaryCTA}<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button&gt;</span>{secondaryCTA}<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>={image} <span class="attr">alt</span>=<span class="str">"hero"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/section&gt;</span>
+  );
+}
+
+<span class="cmt">// Reuse for any campaign:</span>
+<span class="tag">&lt;HeroBanner</span>
+  <span class="attr">title</span>=<span class="str">"Winter Sale is Live!"</span>
+  <span class="attr">primaryCTA</span>=<span class="str">"Shop Now"</span>
+<span class="tag">/&gt;</span>`,
+    props: ['title', 'subtitle', 'image', 'primaryCTA', 'secondaryCTA'],
+    why: '✅ Reusability. One component, infinite campaigns. In HTML you would copy-paste the entire block and change text manually — risking inconsistency and bugs.'
+  },
+
+  h1: {
+    tags: [{ label: 'props.title', cls: 'prop' }],
+    title: 'Title as a Prop',
+    subtitle: 'Dynamic content injected via props',
+    what: 'Inside JSX, curly braces {} let you embed any JavaScript expression. Here, {title} renders whatever string was passed as the title prop — making the component dynamic.',
+    code: `<span class="cmt">// JSX: embed JS with { }</span>
+<span class="tag">&lt;h1&gt;</span>{props.title}<span class="tag">&lt;/h1&gt;</span>
+
+<span class="cmt">// Same as plain HTML:</span>
+<span class="tag">&lt;h1&gt;</span>Style that moves with you.<span class="tag">&lt;/h1&gt;</span>
+
+<span class="cmt">// But dynamic — change once, reflects everywhere:</span>
+<span class="tag">&lt;HeroBanner</span> <span class="attr">title</span>=<span class="str">"New Title"</span> <span class="tag">/&gt;</span>`,
+    props: ['title (string)'],
+    why: '✅ JSX expressions allow any JavaScript — variables, function calls, ternary operators — right inside your markup.'
+  },
+
+  herop: {
+    tags: [{ label: 'props.subtitle', cls: 'prop' }],
+    title: 'Subtitle Prop',
+    subtitle: 'Props make components data-driven',
+    what: 'Props (short for properties) are how you pass data into a React component, like HTML attributes but for your own components. They flow from parent to child — always one direction.',
+    code: `<span class="cmt">// Parent passes the subtitle prop:</span>
+<span class="tag">&lt;HeroBanner</span>
+  <span class="attr">subtitle</span>=<span class="str">"Discover our autumn collection"</span>
+<span class="tag">/&gt;</span>
+
+<span class="cmt">// Child reads it:</span>
+<span class="kw">function</span> <span class="fn">HeroBanner</span>({ subtitle }) {
+  <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>{subtitle}<span class="tag">&lt;/p&gt;</span>;
+}`,
+    props: ['subtitle (string)'],
+    why: '✅ Props = configuration. They make components flexible. Same component, different props → different output. This is what makes React components truly reusable.'
+  },
+
+  ctabtn: {
+    tags: [{ label: 'props.onClick', cls: 'prop' }, { label: 'Event Handler', cls: 'comp' }],
+    title: 'CTA Button — Event Props',
+    subtitle: 'Functions passed as props to handle events',
+    what: 'React handles events using props like onClick. You pass a function from the parent to the child. The child calls it when clicked. This is called "lifting state up".',
+    code: `<span class="kw">function</span> <span class="fn">HeroBanner</span>({ onShopNow }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onShopNow}<span class="tag">&gt;</span>
+      Shop Now
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="cmt">// Parent provides the handler:</span>
+<span class="tag">&lt;HeroBanner</span>
+  <span class="attr">onShopNow</span>={() =&gt; <span class="fn">navigate</span>(<span class="str">"/shop"</span>)}
+<span class="tag">/&gt;</span>`,
+    props: ['onShopNow (function)', 'label (string)'],
+    why: '✅ Separation of concerns: the button doesn\'t know what happens on click — it just calls onShopNow. The parent decides the behavior. This makes components reusable and testable.'
+  },
+
+  ctabtn2: {
+    tags: [{ label: 'props.secondaryCTA', cls: 'prop' }],
+    title: 'Secondary CTA Button',
+    subtitle: 'Same component, different props → different style',
+    what: 'You can render the same Button component twice with different props for different visual styles — no need to create two separate components.',
+    code: `<span class="kw">function</span> <span class="fn">Button</span>({ label, variant = <span class="str">"primary"</span>, onClick }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span>
+      <span class="attr">className</span>={<span class="str">\`btn-\${variant}\`</span>}
+      <span class="attr">onClick</span>={onClick}
+    <span class="tag">&gt;</span>
+      {label}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="tag">&lt;Button</span> <span class="attr">label</span>=<span class="str">"Shop Now"</span> <span class="attr">variant</span>=<span class="str">"primary"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;Button</span> <span class="attr">label</span>=<span class="str">"View Lookbook"</span> <span class="attr">variant</span>=<span class="str">"secondary"</span> <span class="tag">/&gt;</span>`,
+    props: ['label', 'variant', 'onClick'],
+    why: '✅ Props with default values (variant="primary") make components flexible. One component covers both styles.'
+  },
+
+  heroimg: {
+    tags: [{ label: 'props.image', cls: 'prop' }],
+    title: 'Hero Image via Props',
+    subtitle: 'Dynamic images with props',
+    what: 'Images in React are set via props. The src attribute receives a dynamic value — could be a URL from an API, an imported asset, or a CDN link. No hardcoded paths in the template.',
+    code: `<span class="kw">function</span> <span class="fn">HeroBanner</span>({ image, imageAlt }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"hero-img"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>={image} <span class="attr">alt</span>={imageAlt} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}`,
+    props: ['image (URL)', 'imageAlt (string)'],
+    why: '✅ Keeping content in data (props/state) instead of hardcoding it in JSX means your UI can dynamically show any product, campaign, or seasonal content from an API.'
+  },
+
+  sectionhead: {
+    tags: [{ label: '<SectionHeader />', cls: 'comp' }, { label: 'props.title', cls: 'prop' }],
+    title: 'SectionHeader Component',
+    subtitle: 'Consistent section headings — one component, used everywhere',
+    what: 'Section headings appear across the entire site. Making it a component ensures consistent spacing, font-size, and "View all" link styling — everywhere, automatically.',
+    code: `<span class="kw">function</span> <span class="fn">SectionHeader</span>({ title, linkText, onLinkClick }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"section-head"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>{title}<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;a</span> <span class="attr">onClick</span>={onLinkClick}<span class="tag">&gt;</span>{linkText}<span class="tag">&lt;/a&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}`,
+    props: ['title', 'linkText', 'onLinkClick'],
+    why: '✅ DRY principle: Don\'t Repeat Yourself. One SectionHeader component means changing the design once updates all section headers across the site.'
+  },
+
+  catgrid: {
+    tags: [{ label: '<CategoryGrid />', cls: 'comp' }, { label: '.map() + key', cls: 'prop' }],
+    title: 'CategoryGrid — List Rendering',
+    subtitle: 'Array.map() generates JSX for each category',
+    what: 'React renders lists using the JavaScript .map() method. Each item in the categories array becomes a <CategoryCard /> component. The key prop is required so React can efficiently update the list.',
+    code: `<span class="kw">const</span> categories = [
+  { id: 1, icon: <span class="str">"👗"</span>, name: <span class="str">"Women"</span> },
+  { id: 2, icon: <span class="str">"👔"</span>, name: <span class="str">"Men"</span> },
+  <span class="cmt">// ...</span>
+];
+
+<span class="kw">function</span> <span class="fn">CategoryGrid</span>({ categories }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"cat-grid"</span><span class="tag">&gt;</span>
+      {categories.<span class="fn">map</span>(cat =&gt; (
+        <span class="tag">&lt;CategoryCard</span>
+          <span class="attr">key</span>={cat.id}
+          <span class="attr">icon</span>={cat.icon}
+          <span class="attr">name</span>={cat.name}
+        <span class="tag">/&gt;</span>
+      ))}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}`,
+    props: ['categories[ ]'],
+    why: '✅ To add a new category, just push to the array. React re-renders the grid. In plain HTML, you would manually add a new <div> block for each category.'
+  },
+
+  productlist: {
+    tags: [{ label: '<ProductList />', cls: 'comp' }, { label: 'props.products[ ]', cls: 'prop' }],
+    title: 'ProductList Component',
+    subtitle: 'Container that maps product data to <ProductCard /> components',
+    what: '<ProductList /> receives an array of product objects from the parent (or from an API call) and renders a <ProductCard /> for each one using .map().',
+    code: `<span class="kw">function</span> <span class="fn">ProductList</span>({ products, onAddToCart }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"product-grid"</span><span class="tag">&gt;</span>
+      {products.<span class="fn">map</span>(product =&gt; (
+        <span class="tag">&lt;ProductCard</span>
+          <span class="attr">key</span>={product.id}
+          <span class="attr">product</span>={product}
+          <span class="attr">onAddToCart</span>={onAddToCart}
+        <span class="tag">/&gt;</span>
+      ))}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}`,
+    props: ['products[ ]', 'onAddToCart (function)'],
+    why: '✅ Separation: ProductList handles layout and mapping. ProductCard handles individual display. Each has one job — easier to test and change independently.'
+  },
+
+  productcard: {
+    tags: [{ label: '<ProductCard />', cls: 'comp' }, { label: 'key prop', cls: 'prop' }, { label: 'props.product', cls: 'prop' }],
+    title: 'ProductCard — Reusable Component',
+    subtitle: 'One component renders every product card in the grid',
+    what: 'This is React\'s superpower — reusability. One <ProductCard /> component renders every single product. Pass different product data via props and you get a completely different card.',
+    code: `<span class="kw">function</span> <span class="fn">ProductCard</span>({ product, onAddToCart }) {
+  <span class="kw">const</span> { name, price, originalPrice, stars, emoji } = product;
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"product-card"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"product-img"</span><span class="tag">&gt;</span>{emoji}<span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"product-info"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>{name}<span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;p&gt;</span>₹{price} <span class="tag">&lt;s&gt;</span>₹{originalPrice}<span class="tag">&lt;/s&gt;&lt;/p&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() =&gt; <span class="fn">onAddToCart</span>(product)}<span class="tag">&gt;</span>
+          Add to Cart
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}`,
+    props: ['product { id, name, price, originalPrice, emoji }', 'onAddToCart (function)', 'key (required)'],
+    why: '✅ The key prop is mandatory in list rendering. It tells React which item changed, so it updates only that card — not the entire list. This makes React fast.'
+  },
+
+  promo: {
+    tags: [{ label: '<PromoBanner />', cls: 'comp' }, { label: 'props.offer', cls: 'prop' }],
+    title: 'PromoBanner Component',
+    subtitle: 'Promotional section — easily swapped via props',
+    what: 'The promo banner is a component that accepts offer details as props. Marketing teams can update the offer text from a CMS or API without touching the React code.',
+    code: `<span class="kw">function</span> <span class="fn">PromoBanner</span>({ heading, description, ctaText, onSubscribe }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"promo-banner"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>{heading}<span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;p&gt;</span>{description}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onSubscribe}<span class="tag">&gt;</span>
+        {ctaText}
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}`,
+    props: ['heading', 'description', 'ctaText', 'onSubscribe (function)'],
+    why: '✅ Keeping content in props means your component is content-agnostic — reuse it for any promotion by just changing the props.'
+  },
+
+  promobtn: {
+    tags: [{ label: 'props.onSubscribe', cls: 'prop' }, { label: 'Event Handler', cls: 'comp' }],
+    title: 'Subscribe Button — Callback Prop',
+    subtitle: 'Events bubble up to the parent via function props',
+    what: 'The PromoBanner component doesn\'t know what happens after subscribe. It calls onSubscribe() and the parent decides: show a modal, call an API, or update state.',
+    code: `<span class="cmt">// Parent handles the event:</span>
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> handleSubscribe = () =&gt; {
+    <span class="fn">fetch</span>(<span class="str">"/api/subscribe"</span>, { method: <span class="str">"POST"</span> });
+    <span class="fn">alert</span>(<span class="str">"Subscribed!"</span>);
+  };
+  <span class="kw">return</span> <span class="tag">&lt;PromoBanner</span> <span class="attr">onSubscribe</span>={handleSubscribe} <span class="tag">/&gt;</span>;
+}`,
+    props: ['onSubscribe (function)'],
+    why: '✅ This pattern is called "lifting state up". Keep business logic in the parent, pass callbacks down. PromoBanner stays pure and reusable.'
+  },
+
+  footer: {
+    tags: [{ label: '<Footer />', cls: 'comp' }, { label: 'composition', cls: 'prop' }],
+    title: 'Footer Component — Composition',
+    subtitle: 'Footer is built from multiple FooterColumn child components',
+    what: 'The footer is not one big block — it\'s a composition of <FooterColumn /> components. Each column is its own component with its own props. This is "component composition" — React\'s core design pattern.',
+    code: `<span class="kw">function</span> <span class="fn">Footer</span>({ columns }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;footer</span> <span class="attr">className</span>=<span class="str">"site-footer"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"footer-grid"</span><span class="tag">&gt;</span>
+        {columns.<span class="fn">map</span>(col =&gt; (
+          <span class="tag">&lt;FooterColumn</span>
+            <span class="attr">key</span>={col.title}
+            <span class="attr">title</span>={col.title}
+            <span class="attr">links</span>={col.links}
+          <span class="tag">/&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/footer&gt;</span>
+  );
+}`,
+    props: ['columns[ ]'],
+    why: '✅ Composition: build complex UIs by combining simple components. Add or remove footer columns by changing the data array — no HTML edits needed.'
+  },
+
+  footercol: {
+    tags: [{ label: '<FooterColumn />', cls: 'comp' }, { label: 'props.links[ ]', cls: 'prop' }],
+    title: 'FooterColumn — Smallest Reusable Unit',
+    subtitle: 'Each footer column is a component with title + links props',
+    what: 'FooterColumn is the smallest reusable unit in the footer. It renders one heading and a list of links from props. The Footer component composes multiple FooterColumns.',
+    code: `<span class="kw">function</span> <span class="fn">FooterColumn</span>({ title, links }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"footer-col"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h4&gt;</span>{title}<span class="tag">&lt;/h4&gt;</span>
+      {links.<span class="fn">map</span>(link =&gt; (
+        <span class="tag">&lt;a</span> <span class="attr">key</span>={link.text} <span class="attr">href</span>={link.href}<span class="tag">&gt;</span>
+          {link.text}
+        <span class="tag">&lt;/a&gt;</span>
+      ))}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}`,
+    props: ['title (string)', 'links[ ] { text, href }'],
+    why: '✅ Thinking in React: break every piece of UI into components, no matter how small. This makes each piece independently maintainable and testable.'
+  }
+};
+
+/* ═══════════════════════════════════════════
+   PANEL LOGIC
+═══════════════════════════════════════════ */
+function showExplanation(key) {
+  const data = explanations[key];
+  if (!data) return;
+
+  const tags = data.tags.map(t => `<span class="ep-tag ${t.cls}">${t.label}</span>`).join('');
+  const propChips = (data.props || []).map(p => `<span class="prop-chip">${p}</span>`).join('');
+
+  document.getElementById('epContent').innerHTML = `
+    <div class="ep-header">
+      <div>${tags}</div>
+      <div class="ep-title">${data.title}</div>
+      <div class="ep-subtitle">${data.subtitle}</div>
+    </div>
+
+    <div class="ep-section">
+      <h4>What is this?</h4>
+      <p>${data.what}</p>
+    </div>
+
+    <div class="ep-section">
+      <h4>JSX Code</h4>
+      <div class="ep-code">${data.code}</div>
+    </div>
+
+    ${data.props && data.props.length ? `
+    <div class="ep-section">
+      <h4>Props it receives</h4>
+      <div class="props-list">${propChips}</div>
+    </div>` : ''}
+
+    <div class="ep-section">
+      <h4>Why React?</h4>
+      <div class="ep-why">${data.why}</div>
+    </div>
+  `;
+
+  document.getElementById('explainPanel').classList.add('open');
+  document.getElementById('siteWrap').classList.add('panel-open');
+}
+
+function closePanel() {
+  document.getElementById('explainPanel').classList.remove('open');
+  document.getElementById('siteWrap').classList.remove('panel-open');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+</script>
+</body>
+</html>

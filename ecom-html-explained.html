@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopify — HTML/CSS/JS Explained</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf9f7;
+      --surface: #ffffff;
+      --border: #e8e3dc;
+      --text: #1e1b18;
+      --text-soft: #6b6560;
+      --accent: #c9793b;
+      --accent-soft: #fdf3ea;
+      --html: #c9490e;
+      --html-bg: #fff4ee;
+      --css: #2672c8;
+      --css-bg: #eef4fd;
+      --js: #9a7a10;
+      --js-bg: #fdfaee;
+      --highlight: rgba(201, 121, 59, 0.12);
+      --highlight-border: rgba(201, 121, 59, 0.5);
+    }
+
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── TOP TEACHING BAR ── */
+    .teaching-bar {
+      background: #2d2926;
+      color: #f0ebe4;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 13px;
+    }
+    .teaching-bar span { color: #f0b97a; font-weight: 600; }
+
+    /* ── EXPLANATION PANEL ── */
+    .explain-panel {
+      position: fixed;
+      right: 0; top: 0; bottom: 0;
+      width: 360px;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      padding: 24px;
+      overflow-y: auto;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform .3s ease;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.08);
+    }
+    .explain-panel.open { transform: translateX(0); }
+
+    .ep-header { margin-bottom: 20px; }
+    .ep-tag {
+      display: inline-block;
+      font-family: 'Menlo', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .ep-tag.html { background: var(--html-bg); color: var(--html); border: 1px solid #f5c5a8; }
+    .ep-tag.css  { background: var(--css-bg);  color: var(--css);  border: 1px solid #b8d4f5; }
+    .ep-tag.js   { background: var(--js-bg);   color: var(--js);   border: 1px solid #f0dfa0; }
+    .ep-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .ep-subtitle { font-size: 13px; color: var(--text-soft); }
+
+    .ep-section { margin-bottom: 18px; }
+    .ep-section h4 { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-soft); margin-bottom: 6px; }
+    .ep-section p { font-size: 13px; color: var(--text-soft); line-height: 1.65; }
+
+    .ep-code {
+      background: #faf9f7;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: 'Menlo', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+      margin-top: 8px;
+    }
+    .ht { color: #c9490e; }
+    .ha { color: #2672c8; }
+    .hv { color: #2a7a4b; }
+    .hc { color: #aaa; font-style: italic; }
+
+    .ep-why { background: var(--accent-soft); border: 1px solid #f0d4bb; border-radius: 6px; padding: 12px; font-size: 13px; color: var(--accent); line-height: 1.6; margin-top: 8px; }
+
+    .ep-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: 1px solid var(--border);
+      width: 28px; height: 28px; border-radius: 50%;
+      cursor: pointer; font-size: 14px; color: var(--text-soft);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ep-close:hover { background: var(--border); }
+
+    /* ── HOVERABLE ELEMENT ── */
+    .hov {
+      position: relative;
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      transition: outline-color .2s, background .2s;
+      cursor: help;
+    }
+    .hov:hover {
+      outline-color: var(--highlight-border);
+      background: var(--highlight);
+    }
+    .hov-label {
+      position: absolute;
+      top: -22px; left: 0;
+      background: #2d2926;
+      color: #f0ebe4;
+      font-size: 10px;
+      font-family: monospace;
+      padding: 2px 6px;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s;
+      white-space: nowrap;
+      z-index: 10;
+    }
+    .hov:hover .hov-label { opacity: 1; }
+
+    /* ══════════════════════════════
+       ECOMMERCE SITE STYLES
+    ══════════════════════════════ */
+
+    /* ── NAVBAR ── */
+    .site-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      height: 64px;
+      gap: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo { font-size: 20px; font-weight: 800; letter-spacing: -1px; color: var(--text); flex: 0 0 auto; margin-right: 36px; }
+    .nav-links { display: flex; gap: 4px; flex: 1; }
+    .nav-link { padding: 8px 14px; font-size: 14px; color: var(--text-soft); border-radius: 6px; text-decoration: none; transition: background .15s, color .15s; white-space: nowrap; }
+    .nav-link:hover, .nav-link.active { background: var(--bg); color: var(--text); }
+    .nav-actions { display: flex; gap: 8px; align-items: center; }
+    .nav-btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+    .nav-btn.outline { background: none; border: 1px solid var(--border); color: var(--text); }
+    .nav-btn.filled { background: var(--text); color: white; }
+    .nav-search { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; width: 180px; background: var(--bg); }
+
+    /* ── HERO ── */
+    .site-hero {
+      background: linear-gradient(135deg, #f0ebe4 0%, #fdf3ea 100%);
+      padding: 72px 48px;
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .hero-text { flex: 1; min-width: 260px; }
+    .hero-text h1 { font-size: 42px; font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+    .hero-text p  { font-size: 16px; color: var(--text-soft); margin-bottom: 24px; }
+    .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-primary { background: var(--text); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
+    .btn-secondary { background: white; color: var(--text); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; border: 1px solid var(--border); cursor: pointer; }
+    .hero-img { flex: 0 0 320px; height: 220px; background: #e8e3dc; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+
+    /* ── SECTION ── */
+    .section-wrap { max-width: 1100px; margin: 0 auto; padding: 48px 32px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .section-head h2 { font-size: 22px; font-weight: 700; }
+    .section-head a { font-size: 13px; color: var(--accent); text-decoration: none; }
+
+    /* ── PRODUCT GRID ── */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .product-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .product-img { height: 180px; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+    .product-info { padding: 14px 16px; }
+    .product-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .product-price { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .product-price s { color: var(--text-soft); font-size: 13px; font-weight: 400; margin-left: 6px; }
+    .product-stars { font-size: 12px; color: #c09b1a; margin-bottom: 10px; }
+    .product-btn { width: 100%; padding: 9px; background: var(--text); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    /* ── CATEGORIES ── */
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 14px; text-align: center; cursor: pointer; transition: background .15s; }
+    .cat-card:hover { background: var(--accent-soft); border-color: #f0d4bb; }
+    .cat-icon { font-size: 32px; margin-bottom: 8px; }
+    .cat-name { font-size: 13px; font-weight: 600; }
+
+    /* ── BANNER ── */
+    .promo-banner { background: #f0ebe4; border: 1px solid var(--border); border-radius: 12px; padding: 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .promo-banner h3 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .promo-banner p  { color: var(--text-soft); font-size: 14px; }
+
+    /* ── FOOTER ── */
+    .site-footer { background: #2d2926; color: #c8c0b8; padding: 48px 32px 24px; margin-top: 60px; }
+    .footer-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 32px; margin-bottom: 40px; }
+    .footer-col h4 { color: #f0ebe4; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    .footer-col a { display: block; color: #c8c0b8; font-size: 13px; text-decoration: none; margin-bottom: 8px; }
+    .footer-bottom { max-width: 1100px; margin: 0 auto; border-top: 1px solid #3d3630; padding-top: 20px; font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+    /* ── CART SIDEBAR ── */
+    .cart-badge { background: var(--accent); color: white; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; vertical-align: middle; margin-left: 4px; }
+
+    /* Layout adjust for panel */
+    .site-wrap { transition: margin-right .3s; }
+    .site-wrap.panel-open { margin-right: 360px; }
+
+    @media(max-width: 700px) { .explain-panel { width: 100%; } .site-wrap.panel-open { margin-right: 0; } }
+  </style>
+</head>
+<body>
+
+<div class="teaching-bar">
+  <span>Hover over any highlighted element</span> to see the HTML tag and why it is used on this page.
+</div>
+
+<!-- EXPLANATION PANEL -->
+<div class="explain-panel" id="explainPanel">
+  <button class="ep-close" onclick="closePanel()">✕</button>
+  <div id="epContent"></div>
+</div>
+
+<!-- SITE WRAPPER -->
+<div class="site-wrap" id="siteWrap">
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="site-nav hov" onclick="showExplanation('nav')" title="Click to explain">
+    <span class="hov-label">&lt;nav&gt;</span>
+
+    <div class="nav-logo hov" onclick="showExplanation('logo');event.stopPropagation();">
+      <span class="hov-label">&lt;a&gt; logo</span>
+      Shopify
+    </div>
+
+    <ul class="nav-links" style="list-style:none;" onclick="event.stopPropagation();">
+      <li class="hov" onclick="showExplanation('navlinks');event.stopPropagation();">
+        <span class="hov-label">&lt;ul&gt; &lt;li&gt; &lt;a&gt;</span>
+        <a class="nav-link active" href="#">Home</a>
+      </li>
+      <li style="list-style:none"><a class="nav-link" href="#">Shop</a></li>
+      <li style="list-style:none"><a class="nav-link" href="#">Collections</a></li>
+      <li style="list-style:none"><a class="nav-link" href="#">About</a></li>
+    </ul>
+
+    <div class="nav-actions" onclick="event.stopPropagation();">
+      <input class="nav-search hov" type="text" placeholder="Search products…" onclick="showExplanation('search');event.stopPropagation();">
+      <span class="hov-label">&lt;input type="text"&gt;</span>
+      <button class="nav-btn outline hov" onclick="showExplanation('loginbtn');event.stopPropagation();">
+        <span class="hov-label">&lt;button&gt;</span>
+        Sign in
+      </button>
+      <button class="nav-btn filled hov" onclick="showExplanation('cartbtn');event.stopPropagation();">
+        <span class="hov-label">&lt;button&gt; + cart</span>
+        🛒 Cart <span class="cart-badge">3</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="site-hero hov" onclick="showExplanation('hero')">
+    <span class="hov-label">&lt;section&gt; hero</span>
+    <div class="hero-text">
+      <h1 class="hov" onclick="showExplanation('h1');event.stopPropagation();">
+        <span class="hov-label">&lt;h1&gt; heading</span>
+        Style that moves with you.
+      </h1>
+      <p class="hov" onclick="showExplanation('herop');event.stopPropagation();">
+        <span class="hov-label">&lt;p&gt; paragraph</span>
+        Discover our new autumn collection — crafted for comfort, designed for life.
+      </p>
+      <div class="hero-cta">
+        <button class="btn-primary hov" onclick="showExplanation('ctabtn');event.stopPropagation();">
+          <span class="hov-label">&lt;button&gt; primary CTA</span>
+          Shop Now
+        </button>
+        <button class="btn-secondary hov" onclick="showExplanation('ctabtn2');event.stopPropagation();">
+          <span class="hov-label">&lt;button&gt; secondary CTA</span>
+          View Lookbook
+        </button>
+      </div>
+    </div>
+    <div class="hero-img hov" onclick="showExplanation('heroimg');event.stopPropagation();">
+      <span class="hov-label">&lt;img&gt; hero banner</span>
+      👗
+    </div>
+  </section>
+
+  <!-- ══ CATEGORIES ══ -->
+  <div class="section-wrap">
+    <div class="section-head hov" onclick="showExplanation('sectionhead')">
+      <span class="hov-label">&lt;div&gt; section header</span>
+      <h2>Browse Categories</h2>
+      <a href="#">View all →</a>
+    </div>
+
+    <div class="cat-grid hov" onclick="showExplanation('catgrid')">
+      <span class="hov-label">&lt;div class="grid"&gt; + CSS Grid</span>
+      <div class="cat-card"><div class="cat-icon">👗</div><div class="cat-name">Women</div></div>
+      <div class="cat-card"><div class="cat-icon">👔</div><div class="cat-name">Men</div></div>
+      <div class="cat-card"><div class="cat-icon">👟</div><div class="cat-name">Footwear</div></div>
+      <div class="cat-card"><div class="cat-icon">👜</div><div class="cat-name">Bags</div></div>
+      <div class="cat-card"><div class="cat-icon">⌚</div><div class="cat-name">Accessories</div></div>
+      <div class="cat-card"><div class="cat-icon">🧢</div><div class="cat-name">Headwear</div></div>
+    </div>
+  </div>
+
+  <!-- ══ PRODUCTS ══ -->
+  <div class="section-wrap" style="padding-top:0;">
+    <div class="section-head">
+      <h2>Featured Products</h2>
+      <a href="#">See all</a>
+    </div>
+
+    <div class="product-grid hov" onclick="showExplanation('productgrid')">
+      <span class="hov-label">&lt;div class="grid"&gt;</span>
+
+      <div class="product-card hov" onclick="showExplanation('productcard');event.stopPropagation()">
+        <span class="hov-label">&lt;article&gt; card</span>
+        <div class="product-img" style="background:#fdf3ea;">🧥</div>
+        <div class="product-info">
+          <div class="product-name">Autumn Jacket</div>
+          <div class="product-stars">★★★★☆ (128)</div>
+          <div class="product-price">₹2,499 <s>₹3,499</s></div>
+          <button class="product-btn hov" onclick="showExplanation('addcart');event.stopPropagation()">
+            <span class="hov-label">&lt;button&gt; onclick handler</span>
+            Add to Cart
+          </button>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img" style="background:#eef4fd;">👟</div>
+        <div class="product-info">
+          <div class="product-name">Running Sneakers</div>
+          <div class="product-stars">★★★★★ (241)</div>
+          <div class="product-price">₹3,999 <s>₹5,500</s></div>
+          <button class="product-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img" style="background:#eef8f3;">👜</div>
+        <div class="product-info">
+          <div class="product-name">Leather Tote Bag</div>
+          <div class="product-stars">★★★★☆ (87)</div>
+          <div class="product-price">₹1,899 <s>₹2,800</s></div>
+          <button class="product-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img" style="background:#fdfaee;">⌚</div>
+        <div class="product-info">
+          <div class="product-name">Classic Timepiece</div>
+          <div class="product-stars">★★★★★ (56)</div>
+          <div class="product-price">₹7,499 <s>₹9,999</s></div>
+          <button class="product-btn">Add to Cart</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ PROMO BANNER ══ -->
+  <div class="section-wrap" style="padding-top:0;">
+    <div class="promo-banner hov" onclick="showExplanation('promobanner')">
+      <span class="hov-label">&lt;section&gt; promo</span>
+      <div>
+        <h3>Get 20% off your first order</h3>
+        <p>Sign up with your email and get an instant discount code.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input class="hov" type="email" placeholder="you@email.com" onclick="showExplanation('emailinput');event.stopPropagation()" style="padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-size:14px;width:220px;">
+        <span class="hov-label">&lt;input type="email"&gt;</span>
+        <button class="btn-primary">Subscribe</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="site-footer hov" onclick="showExplanation('footer')">
+    <span class="hov-label">&lt;footer&gt;</span>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Shopify</h4>
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-col">
+        <h4>Help</h4>
+        <a href="#">FAQ</a>
+        <a href="#">Returns</a>
+        <a href="#">Track Order</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <a href="#">Instagram</a>
+        <a href="#">Twitter</a>
+        <a href="#">YouTube</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Shopify. All rights reserved.</span>
+      <span>Built with HTML · CSS · JavaScript</span>
+    </div>
+  </footer>
+
+</div><!-- end site-wrap -->
+
+<script>
+  const explanations = {
+    nav: {
+      tag: '<nav>', type: 'html',
+      title: 'Navigation Bar',
+      what: 'The <nav> element is a semantic HTML5 tag that marks a section of the page dedicated to navigation links. Browsers and screen readers understand that content inside <nav> is for site navigation.',
+      code: `<nav>
+  <a href="/">Logo</a>
+  <ul>
+    <li><a href="/shop">Shop</a></li>
+    <li><a href="/about">About</a></li>
+  </ul>
+  <button>Cart</button>
+</nav>`,
+      why: '✦ Why semantic? A plain <div> works visually — but <nav> tells search engines and assistive tools exactly what this block is, improving SEO and accessibility.',
+      css: 'position: sticky; top: 0 — keeps the nav visible as the user scrolls. background + border-bottom create the visual separation.'
+    },
+    logo: {
+      tag: '<a> (logo)', type: 'html',
+      title: 'Logo Link',
+      what: 'The logo is wrapped in an <a href="/"> anchor tag. Clicking it always navigates the user back to the homepage — this is a universal web convention every user expects.',
+      code: `<a href="/" class="logo">
+  Shopify
+</a>`,
+      why: '✦ Why an anchor? A <span> or <div> cannot be navigated to with a keyboard. An <a> is natively focusable, keyboard-accessible, and right-clickable to open in a new tab.'
+    },
+    navlinks: {
+      tag: '<ul> <li> <a>', type: 'html',
+      title: 'Navigation Links',
+      what: 'Navigation links are marked up as an unordered list (<ul>) of list items (<li>), each containing an anchor (<a>). This is the semantically correct structure — it describes an unordered set of related page links.',
+      code: `<ul class="nav-links">
+  <li><a href="/">Home</a></li>
+  <li><a href="/shop">Shop</a></li>
+  <li><a href="/about">About</a></li>
+</ul>`,
+      why: '✦ Why a list? Screen readers announce "list of 3 items" before reading the links — giving context. Using raw <div> tags loses this semantic meaning entirely.',
+      css: 'display: flex — turns the vertical list horizontal. gap: 4px adds spacing between items.'
+    },
+    search: {
+      tag: '<input type="text">', type: 'html',
+      title: 'Search Input',
+      what: 'An <input type="text"> creates a single-line text field. The placeholder attribute shows helper text before the user types. JavaScript listens for the input event to trigger live search results.',
+      code: `<input
+  type="text"
+  placeholder="Search products…"
+  id="searchBox"
+/>
+
+<script>
+  document.getElementById('searchBox')
+    .addEventListener('input', function() {
+      filterProducts(this.value);
+    });
+<\/script>`,
+      why: '✦ Why type="text" vs type="search"? type="search" adds a small × clear button in some browsers and signals intent to search engines — but type="text" gives more visual control.'
+    },
+    loginbtn: {
+      tag: '<button>', type: 'html',
+      title: 'Sign In Button',
+      what: 'A <button> element is a native interactive control. It is keyboard-focusable, works with the Enter key, and has built-in accessibility attributes. For navigation-only actions, an <a> would be used — but for actions (like opening a login modal), <button> is correct.',
+      code: `<button class="btn-outline"
+  onclick="openLoginModal()">
+  Sign in
+</button>
+
+function openLoginModal() {
+  document.getElementById('modal')
+    .style.display = 'flex';
+}`,
+      why: '✦ Why not a styled <div>? A <div> cannot be focused with Tab, activated with Enter/Space, or announced by screen readers as a button. Always use <button> for actions.'
+    },
+    cartbtn: {
+      tag: '<button> + badge', type: 'html',
+      title: 'Cart Button with Badge',
+      what: 'The cart button is a <button> with a nested <span> acting as a badge. JavaScript tracks the item count in a variable and updates the span\'s innerText whenever a product is added.',
+      code: `<button id="cartBtn">
+  🛒 Cart
+  <span id="cartCount">3</span>
+</button>
+
+<script>
+  let count = 3;
+  function addItem() {
+    count++;
+    document.getElementById('cartCount')
+      .innerText = count;
+  }
+<\/script>`,
+      why: '✦ This is the core problem React solves. As cart items grow, manually updating every related DOM node (badge, cart total, checkout button) becomes error-prone. React auto-syncs all of them from one state variable.'
+    },
+    hero: {
+      tag: '<section>', type: 'html',
+      title: 'Hero Section',
+      what: 'The <section> element groups related content under a single theme — here, the main promotional message. It differs from <div> in that it carries semantic meaning: "this is a standalone section of the page".',
+      code: `<section class="hero">
+  <div class="hero-text">
+    <h1>Style that moves with you.</h1>
+    <p>Discover our new collection…</p>
+    <button>Shop Now</button>
+  </div>
+  <img src="banner.jpg" alt="Autumn fashion" />
+</section>`,
+      why: '✦ CSS is used here to create the split layout: display: flex with a gap puts text and image side by side. The gradient background uses: background: linear-gradient(135deg, …)',
+      css: 'display: flex; align-items: center; padding: 72px 48px — creates a tall, balanced layout. The gradient gives visual depth without an image file.'
+    },
+    h1: {
+      tag: '<h1>', type: 'html',
+      title: 'Main Heading (h1)',
+      what: 'There is only one <h1> per page. It is the single most important piece of text — for SEO, search engines treat h1 as the primary topic of the page. Screen readers also use it as the main landmark.',
+      code: `<h1>Style that moves with you.</h1>
+
+<!-- CSS -->
+h1 {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.1;
+}`,
+      why: '✦ Rule: One h1 per page. Use h2 for section headings, h3 for sub-sections. This heading hierarchy is how search crawlers understand content priority.'
+    },
+    herop: {
+      tag: '<p>', type: 'html',
+      title: 'Paragraph Tag',
+      what: 'The <p> element wraps a block of body text. The browser automatically adds vertical spacing above and below paragraphs. It is block-level — it starts on a new line.',
+      code: `<p class="hero-desc">
+  Discover our new autumn collection —
+  crafted for comfort, designed for life.
+</p>`,
+      why: '✦ Use <p> for prose text. For short one-liners inside flex or grid containers, <span> (inline) might be used instead. Never nest block elements like <div> inside <p>.'
+    },
+    ctabtn: {
+      tag: '<button> primary CTA', type: 'html',
+      title: 'Call-to-Action Button',
+      what: 'The primary CTA (Call-to-Action) is the most visually prominent button on the page. The dark fill signals "this is the main thing to do". JavaScript attaches a click event that navigates to the shop or triggers an animation.',
+      code: `<button class="btn-primary"
+  onclick="location.href='/shop'">
+  Shop Now
+</button>
+
+/* CSS */
+.btn-primary {
+  background: #1e1b18;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+}`,
+      why: '✦ Visual hierarchy: dark filled button = primary action. Outline button = secondary. Ghost/text button = tertiary. Users scan CTAs instantly — colour and weight communicate priority.'
+    },
+    heroimg: {
+      tag: '<img> / placeholder div', type: 'html',
+      title: 'Hero Image',
+      what: 'In production, this would be an <img> tag with a src pointing to an optimised image file and an alt attribute describing the image for screen readers. The alt attribute is critical for accessibility and SEO.',
+      code: `<img
+  src="/images/autumn-jacket.jpg"
+  alt="Model wearing an autumn jacket"
+  width="560"
+  height="400"
+  loading="lazy"
+/>`,
+      why: '✦ loading="lazy" defers the image download until it is about to enter the viewport — improving initial page load speed. Always include descriptive alt text.'
+    },
+    catgrid: {
+      tag: 'CSS Grid layout', type: 'css',
+      title: 'Category Grid',
+      what: 'The category cards are laid out using CSS Grid. grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) automatically creates as many columns as fit, each at least 150px wide — making it responsive without media queries.',
+      code: `/* CSS */
+.cat-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}`,
+      why: '✦ auto-fill + minmax is the modern responsive layout pattern. The grid reflows from 6 columns on desktop to 2 on mobile automatically — no JavaScript, no @media queries needed.'
+    },
+    productgrid: {
+      tag: 'CSS Grid product cards', type: 'css',
+      title: 'Product Grid',
+      what: 'Products are arranged in a CSS Grid. Each card is a self-contained block of HTML. In vanilla JS, the product data array is mapped over using .forEach() and each card\'s HTML is built as a string with innerHTML.',
+      code: `/* JS - builds cards dynamically */
+const products = [
+  { name: "Jacket", price: 2499 },
+  { name: "Sneakers", price: 3999 }
+];
+
+products.forEach(p => {
+  container.innerHTML += \`
+    <div class="product-card">
+      <h3>\${p.name}</h3>
+      <p>₹\${p.price}</p>
+    </div>
+  \`;
+});`,
+      why: '✦ innerHTML string building works, but it is dangerous (XSS risk) and not reactive — if the cart changes, you have to re-run this whole loop. React solves this with component re-rendering.'
+    },
+    productcard: {
+      tag: '<article> product card', type: 'html',
+      title: 'Product Card',
+      what: 'Each product card is semantically an <article> — a self-contained piece of content that makes sense on its own. The card uses a combination of flexbox (product info stacked vertically) and fixed-height image area.',
+      code: `<article class="product-card">
+  <div class="product-img">
+    <img src="jacket.jpg" alt="Jacket" />
+  </div>
+  <div class="product-info">
+    <h3>Autumn Jacket</h3>
+    <p class="price">₹2,499</p>
+    <button onclick="addToCart(id)">
+      Add to Cart
+    </button>
+  </div>
+</article>`,
+      why: '✦ <article> is more semantic than <div class="card"> — it communicates that this content stands alone and can be shared, bookmarked, or indexed independently.'
+    },
+    addcart: {
+      tag: '<button> onclick', type: 'js',
+      title: '"Add to Cart" — JavaScript Event',
+      what: 'Clicking "Add to Cart" triggers a JavaScript function via the onclick attribute (or addEventListener). The function updates a cartItems array in memory, then manually updates every DOM element that shows cart data.',
+      code: `let cartItems = [];
+
+function addToCart(productId) {
+  cartItems.push(productId);
+
+  // Manually update every DOM node
+  document.getElementById('cartCount')
+    .innerText = cartItems.length;
+
+  document.getElementById('cartTotal')
+    .innerText = calculateTotal();
+}`,
+      why: '✦ This is imperative DOM management. Each new place cart data appears (badge, sidebar, checkout) must be manually updated. React replaces this with a single state variable that all components read from.'
+    },
+    promobanner: {
+      tag: '<section> promo', type: 'html',
+      title: 'Promotional Banner',
+      what: 'A promotional banner is typically a full-width <section> with a contrasting background. The email capture form uses an <input type="email"> which the browser validates automatically — no JavaScript needed for format checking.',
+      code: `<section class="promo-banner">
+  <h3>Get 20% off</h3>
+  <form onsubmit="subscribe(event)">
+    <input type="email"
+      placeholder="you@email.com"
+      required />
+    <button type="submit">Subscribe</button>
+  </form>
+</section>`,
+      why: '✦ type="email" + required: the browser validates email format before submitting. No JavaScript regex needed for basic validation — HTML attributes handle it natively.'
+    },
+    emailinput: {
+      tag: '<input type="email">', type: 'html',
+      title: 'Email Input',
+      what: 'type="email" tells the browser this field expects an email address. The browser automatically shows an email keyboard on mobile and validates the format when the form is submitted.',
+      code: `<input
+  type="email"
+  placeholder="you@email.com"
+  required
+/>`,
+      why: '✦ HTML input types: text, email, password, number, date, tel, url, range, checkbox, radio, file. Each gives you built-in validation, keyboard type (mobile), and browser autofill — for free.'
+    },
+    footer: {
+      tag: '<footer>', type: 'html',
+      title: 'Site Footer',
+      what: 'The <footer> element is a semantic landmark containing copyright information, secondary links, and legal notices. Like <nav> and <header>, it carries meaning beyond a plain <div>. Screen readers announce it as a "content info" landmark.',
+      code: `<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/about">About</a>
+      <a href="/careers">Careers</a>
+    </div>
+    <!-- more columns -->
+  </div>
+  <p>© 2026 Shopify. All rights reserved.</p>
+</footer>`,
+      why: '✦ CSS Grid with repeat(auto-fit, minmax(160px, 1fr)) makes the footer columns collapse from 4 columns on desktop to 2 or 1 on mobile — purely with CSS, no JavaScript.'
+    },
+    sectionhead: {
+      tag: '<div> section header', type: 'html',
+      title: 'Section Header Row',
+      what: 'The section heading row contains an <h2> and a "View all" link side by side. This is achieved with display: flex and justify-content: space-between — a very common pattern for titled content sections.',
+      code: `<div class="section-head">
+  <h2>Browse Categories</h2>
+  <a href="/categories">View all →</a>
+</div>
+
+/* CSS */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}`,
+      why: '✦ This two-item flex layout is one of the most used patterns in web design — title on the left, action link on the right. It works at any container width.'
+    }
+  };
+
+  function showExplanation(key) {
+    const e = explanations[key];
+    if (!e) return;
+    const tagClass = e.type;
+    document.getElementById('epContent').innerHTML = `
+      <div class="ep-header">
+        <span class="ep-tag ${tagClass}">${e.tag}</span>
+        <div class="ep-title">${e.title}</div>
+        <div class="ep-subtitle">${tagClass.toUpperCase()} — ${tagClass === 'html' ? 'Structure' : tagClass === 'css' ? 'Appearance' : 'Behaviour'}</div>
+      </div>
+      <div class="ep-section">
+        <h4>What is this?</h4>
+        <p>${e.what}</p>
+      </div>
+      <div class="ep-section">
+        <h4>Code</h4>
+        <div class="ep-code">${e.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      </div>
+      <div class="ep-section">
+        <h4>Why use it?</h4>
+        <div class="ep-why">${e.why}</div>
+      </div>
+      ${e.css ? `<div class="ep-section"><h4>CSS Note</h4><p style="font-size:13px;color:var(--text-soft);">${e.css}</p></div>` : ''}
+    `;
+    document.getElementById('explainPanel').classList.add('open');
+    document.getElementById('siteWrap').classList.add('panel-open');
+  }
+
+  function closePanel() {
+    document.getElementById('explainPanel').classList.remove('open');
+    document.getElementById('siteWrap').classList.remove('panel-open');
+  }
+</script>
+</body>
+</html>
